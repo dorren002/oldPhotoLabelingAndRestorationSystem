@@ -21,7 +21,7 @@
        <cursorShape>ArrowCursor</cursorShape>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="cursor">
@@ -276,8 +276,8 @@
          <rect>
           <x>15</x>
           <y>10</y>
-          <width>481</width>
-          <height>421</height>
+          <width>491</width>
+          <height>411</height>
          </rect>
         </property>
        </widget>
