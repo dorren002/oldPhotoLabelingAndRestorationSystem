@@ -94,10 +94,16 @@
     <QtRcc Include="oldPhotoRestoration.qrc" />
     <QtUic Include="oldPhotoRestoration.ui" />
     <QtMoc Include="oldPhotoRestoration.h" />
+    <ClCompile Include="ImageItem.cpp" />
+    <ClCompile Include="ImageScene.cpp" />
     <ClCompile Include="oldPhotoRestoration.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OpenCV-3.4.1\build\include;D:\OpenCV-3.4.1\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ImageItem.h" />
+    <ClInclude Include="ImageScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

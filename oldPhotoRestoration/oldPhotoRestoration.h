@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <opencv2\opencv.hpp>
 #include <string>
+#include "ImageItem.h"
 
 #include "ui_oldPhotoRestoration.h"
 
@@ -23,6 +24,10 @@ public:
 
 private:
     Ui::oldPhotoRestorationClass ui;
-    void showCvImg();
-    bool openFile(std::string fname);
+    QGraphicsScene* scene;//ÕºœÒœ‘ æ
+    ImageItem* imageItem;
+
+    void showOriginalImg();
+    bool openImageFile(std::string fname);
+    void mousePressEvent(QMouseEvent* event);
 };
