@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/oldPhotoRestoration">
         <file>image/back-fococlipping-standard.png</file>
+        <file>image/default.jpg</file>
     </qresource>
 </RCC>

@@ -1,6 +1,28 @@
-#include "ImageScene.h"
+ï»¿#include "ImageScene.h"
+#include "qpainter.h"
 
 void ImageScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    QGraphicsScene::mousePressEvent(event); // ½«µã»÷ÊÂ¼þÏòÏÂ´«µÝµ½itemÖÐ
+    QGraphicsScene::mousePressEvent(event); // å°†ç‚¹å‡»äº‹ä»¶å‘ä¸‹ä¼ é€’åˆ°itemä¸­
+}
+
+void ImageScene::drawBackground(QPainter* painter, const QRectF& rect)
+{
+	QPixmap foreImg;
+	foreImg.load("F:/input.png");
+	if (!foreImg.isNull())
+	{
+		painter->drawPixmap(int(sceneRect().left()), int(sceneRect().top()), foreImg);
+	}
+
+}
+void ImageScene::drawForeground(QPainter* painter, const QRectF& rect)
+{
+	QPixmap foreImg;
+	foreImg.load("F:/mask.png");
+	if (!foreImg.isNull())
+	{
+		painter->setOpacity(0.5);//é€æ˜Žåº¦è®¾ç½®
+		painter->drawPixmap(int(sceneRect().left()), int(sceneRect().top()), foreImg);
+	}
 }

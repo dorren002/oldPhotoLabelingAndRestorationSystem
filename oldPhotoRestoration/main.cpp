@@ -1,11 +1,32 @@
-#include "oldPhotoRestoration.h"
+ï»¿#include "oldPhotoRestoration.h"
 #include <QtWidgets/QApplication>
+#include <QTextCodec>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv); // Ó¦ÓÃ³ÌĞò¶ÔÏó
-    oldPhotoRestoration w; //´°¿Ú¶ÔÏó
+    QApplication a(argc, argv); // åº”ç”¨ç¨‹åºå¯¹è±¡
+    oldPhotoRestoration w; //çª—å£å¯¹è±¡
     w.show(); 
-    return a.exec(); // Ó¦ÓÃ³ÌĞò¶ÔÏó½øÈëÏûÏ¢Ñ­»·
+
+    //è®¾ç½®ä¸­æ–‡å­—ä½“  
+    a.setFont(QFont("Microsoft Yahei", 9));
+
+    //è®¾ç½®ä¸­æ–‡ç¼–ç 
+#if (QT_VERSION <= QT_VERSION_CHECK(5,0,0))
+#if _MSC_VER
+    QTextCodec* codec = QTextCodec::codecForName("GBK");
+#else
+    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+#endif
+    QTextCodec::setCodecForLocale(codec);
+    QTextCodec::setCodecForCStrings(codec);
+    QTextCodec::setCodecForTr(codec);
+#else
+    QTextCodec* codec = QTextCodec::codecForName("GBK");
+    QTextCodec::setCodecForLocale(codec);
+#endif
+
+
+    return a.exec(); // åº”ç”¨ç¨‹åºå¯¹è±¡è¿›å…¥æ¶ˆæ¯å¾ªç¯
 }
     

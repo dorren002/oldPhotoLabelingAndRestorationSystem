@@ -1,10 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QtWidgets/QMainWindow>
 #include <opencv2\opencv.hpp>
 #include <string>
-#include "ImageItem.h"
 
+#include "ImageItem.h"
+#include "ImageScene.h"
 #include "ui_oldPhotoRestoration.h"
 
 #define VOS_OK 1;
@@ -24,10 +25,14 @@ public:
 
 private:
     Ui::oldPhotoRestorationClass ui;
-    QGraphicsScene* scene;//Í¼ÏñÏÔÊ¾
+    ImageScene* scene;//å›¾åƒæ˜¾ç¤º
     ImageItem* imageItem;
+    QGraphicsPixmapItem* maskItem;
 
-    void showOriginalImg();
+    QImage img2QImg(cv::Mat& img);
+    void updateImageItem();
+    void updateMaskItem();
     bool openImageFile(std::string fname);
     void mousePressEvent(QMouseEvent* event);
+    void updateMask();
 };

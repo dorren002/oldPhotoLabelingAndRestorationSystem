@@ -1,13 +1,10 @@
-#include "oldPhotoRestoration.h"
-#include "ImageScene.h"
-
+ï»¿#include "oldPhotoRestoration.h"
 
 #include "qfiledialog.h"
 #include "qmessagebox.h"
 #include "qdebug.h"
-#include "qgraphicssceneevent.h"
 
-#include <string>
+#include <QMouseEvent>
 #include <QGraphicsPixmapItem>
 
 #include <opencv2\opencv.hpp>
@@ -20,17 +17,16 @@ oldPhotoRestoration::oldPhotoRestoration(QWidget* parent)
 {
     ui.setupUi(this);
 
-    // TODO£º´°¿Ú×ÔÊÊÓ¦
+    // TODOï¼šçª—å£è‡ªé€‚åº”
     setWindowTitle("Old");
 
-    // uiÃÀ»¯
+    // uiç¾ŽåŒ–
     ui.btnBack->setIcon(QIcon(":/oldPhotoRestoration/image/back-fococlipping-standard.png"));
     connect(ui.actionSelectRootPath, &QAction::triggered, this, &oldPhotoRestoration::actionFileClicked);
 
-    // Í¼ÏñÏÔÊ¾
+    // å›¾åƒæ˜¾ç¤º
     scene = new ImageScene();
     ui.labelingGraphicView->setScene(scene);
-    imageItem = new ImageItem(new QGraphicsPixmapItem);
     ui.labelingGraphicView->setMouseTracking(true);
 }
 
@@ -39,62 +35,84 @@ oldPhotoRestoration::~oldPhotoRestoration()
 
 void oldPhotoRestoration::mousePressEvent(QMouseEvent* event)
 {
-    qDebug() << imageItem->posX << "," << imageItem->posY;
+    int globalX = event->x();
+    int globalY = event->y();
+    if (ui.labelingGraphicView->geometry().contains(QPoint(globalX, globalY))) {
+        if (event->button() & Qt::LeftButton)
+        {
+            // å·¦é”®é€‰æ‹©
+
+        }
+        else if (event->button() & Qt::RightButton)
+        {
+            // å³é”®å–æ¶ˆ
+
+        }
+    }
 }
 
 void oldPhotoRestoration::actionFileClicked() 
 {
-    QString filename;
-    filename = QFileDialog::getOpenFileName(this,
-        tr("Ñ¡ÔñÍ¼Ïñ"),
+    QString filename = QFileDialog::getOpenFileName(this,
+        tr("Select Image"),
         "",
         tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
+    
     if (filename.isEmpty())
     {
         return;
     }
     else
     {
-        string fname;
-        fname = filename.toStdString();
+        string fname = filename.toLocal8Bit().constData();
         if (openImageFile(fname)) {
-            // TODO ½Ó·Ö¸îÄ£ÐÍ
-            Mat newMask(cv::Size(imgSizeX, imgSizeY), CV_8UC1);
-            mask = newMask;
-            showOriginalImg();
+            // TODO æŽ¥åˆ†å‰²æ¨¡åž‹
+            mask = Mat::ones(cv::Size(imgSizeX, imgSizeY), CV_8UC1); ;
+            updateImageItem();
+            updateMaskItem();
         }
     }
 }
 
 /*
-    ¶ÁÈ¡Í¼ÏñÎÄ¼þ
+    è¯»å–å›¾åƒæ–‡ä»¶
 */
 bool oldPhotoRestoration::openImageFile(string fname)
 {
-    Mat newImg = cv::imread(fname);
+    Mat newImg = imread(fname);
     if (newImg.empty())
     {
-        QMessageBox::information(this, "¾¯¸æ", "Í¼Æ¬¶ÁÈ¡Ê§°Ü£¬Çë¼ì²éÍ¼Æ¬Â·¾¶£¡");
+        QMessageBox::information(this, "è­¦å‘Š", "å›¾ç‰‡è¯»å–å¤±è´¥ï¼Œè¯·æ£€æŸ¥å›¾ç‰‡è·¯å¾„ï¼");
         return VOS_FAIL;
     }
-    srcImg = newImg;
-    imgSizeX = 400;//newImg.rows;
+    imgSizeX = 400;// newImg.rows;
     imgSizeY = 400;// newImg.cols;
+
+    Size dsize(imgSizeX, imgSizeY);
+    Mat resizeImg(imgSizeX, imgSizeY, 3);
+    cv::resize(newImg, resizeImg, dsize);
+    cvtColor(resizeImg, srcImg, COLOR_BGR2RGB);
     return VOS_OK;
 }
 
-/*
-    µÚÒ»´ÎÏÔÊ¾Ô­Í¼£¬¶ÁÈ¡Í¼ÏñÊ±ÔËÐÐ
-*/
-void oldPhotoRestoration::showOriginalImg()
+void oldPhotoRestoration::updateMask()
 {
-    Mat imgResize, imgShow;
-    Size dsize(400, 400);
-    cv::resize(srcImg, imgResize, dsize);
-    cvtColor(imgResize, imgShow, COLOR_BGR2RGB); // Í¼Ïñ¸ñÊ½×ª»»
 
-    QImage qImg = QImage((unsigned char*)(imgShow.data), imgShow.cols,
-        imgShow.rows, imgShow.cols * imgShow.channels(), QImage::Format_RGB888);
-    imageItem->setPixmap(QPixmap::fromImage(qImg));
-    scene->addItem(imageItem);
+}
+
+QImage oldPhotoRestoration::img2QImg(Mat& img)
+{
+    QImage qImg = QImage((unsigned char*)(srcImg.data), imgSizeY,
+        imgSizeX, imgSizeY * srcImg.channels(), QImage::Format_RGB888);
+    return qImg;
+}
+
+void oldPhotoRestoration::updateImageItem()
+{
+    imageItem->setPixmap(QPixmap::fromImage(img2QImg(srcImg)));
+}
+
+void oldPhotoRestoration::updateMaskItem()
+{
+    maskItem->setPixmap(QPixmap::fromImage(img2QImg(mask)));
 }
