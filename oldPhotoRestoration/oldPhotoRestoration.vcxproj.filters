@@ -26,13 +26,13 @@
     <QtRcc Include="oldPhotoRestoration.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="oldPhotoRestoration.ui">
+    <QtUic Include="mainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="oldPhotoRestoration.h">
+    <QtMoc Include="mainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClCompile Include="oldPhotoRestoration.cpp">
+    <ClCompile Include="mainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,6 +46,15 @@
     <ClCompile Include="ImageItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImageView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="maskUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="util.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageScene.h">
@@ -55,6 +64,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="maskUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>oldPhotoRestorationClass</class>
- <widget class="QMainWindow" name="oldPhotoRestorationClass">
+ <class>mainWindowClass</class>
+ <widget class="QMainWindow" name="mainWindowClass">
   <property name="geometry">
    <rect>
     <x>0</x>

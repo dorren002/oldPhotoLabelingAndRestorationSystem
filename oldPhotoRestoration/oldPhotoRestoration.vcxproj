@@ -92,12 +92,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="util.h" />
     <QtRcc Include="oldPhotoRestoration.qrc" />
-    <QtUic Include="oldPhotoRestoration.ui" />
-    <QtMoc Include="oldPhotoRestoration.h" />
+    <QtUic Include="mainWindow.ui" />
+    <QtMoc Include="mainWindow.h" />
     <ClCompile Include="ImageItem.cpp" />
     <ClCompile Include="ImageScene.cpp" />
-    <ClCompile Include="oldPhotoRestoration.cpp">
+    <ClCompile Include="ImageView.cpp" />
+    <ClCompile Include="maskUpdater.cpp" />
+    <ClCompile Include="mainWindow.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OpenCV-3.4.1\build\include;D:\OpenCV-3.4.1\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="main.cpp" />
@@ -105,6 +108,8 @@
   <ItemGroup>
     <ClInclude Include="ImageItem.h" />
     <ClInclude Include="ImageScene.h" />
+    <ClInclude Include="ImageView.h" />
+    <ClInclude Include="maskUpdater.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
