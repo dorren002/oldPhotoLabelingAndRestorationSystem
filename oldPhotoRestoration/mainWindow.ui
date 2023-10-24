@@ -379,7 +379,7 @@
   <customwidget>
    <class>ImageView</class>
    <extends>QGraphicsView</extends>
-   <header location="global">E:\Code\CPP\oldPhotoRestoration\oldPhotoRestoration\ImageView.h</header>
+   <header location="global">C:\Users\Administrator\source\repos\oldPhotoLabelingAndRestorationSystem\oldPhotoRestoration\ImageView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

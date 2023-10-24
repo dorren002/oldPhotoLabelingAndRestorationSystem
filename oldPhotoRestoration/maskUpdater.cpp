@@ -78,7 +78,7 @@ void maskUpdater::add_mask(int x, int y) {
             
             for (int index = 0; index != 4; ++index) {
                 int next_i = cur_i + di[index], next_j = cur_j + dj[index];
-                if (visited[next_i][next_j] || next_i < 0 || next_j < 0 || next_i == imgHeight || next_j == imgWidth) {
+                if (next_i < 0 || next_j < 0 || next_i == imgHeight || next_j == imgWidth || visited[next_i][next_j]) {
                     continue;
                 }
                 queuei.push(next_i);
@@ -97,10 +97,10 @@ bool maskUpdater::resetMask() {
         return VOS_FAIL;
     }
     if (maskFlag == 1) {
-        mask = Mat::ones(cv::Size(imgHeight, imgWidth), CV_8UC1);
+        mask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
     }
     else {
-        mask = Mat::zeros(cv::Size(imgHeight, imgWidth), CV_8UC1);
+        mask = Mat::ones(cv::Size(imgWidth, imgHeight), CV_8UC1) * 255;
     }
     return VOS_OK;
 }

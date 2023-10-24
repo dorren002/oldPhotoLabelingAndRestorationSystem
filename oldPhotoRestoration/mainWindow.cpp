@@ -96,26 +96,23 @@ bool mainWindow::openImageFile(string fname)
     }
 }
 
-QImage mainWindow::img2QImg(Mat& img)
+void mainWindow::mat2QImage(Mat& mat, QImage* qImage)
 {
-    QImage qImg;
-    qDebug() << img.channels();
-    if (img.channels() == 1) {
-        qImg = QImage((unsigned char*)(img.data), img.rows,
-            img.cols, img.cols * img.channels(), QImage::Format_Grayscale8);
+    if (mat.channels() == 1) {
+        *qImage = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.cols, QImage::Format_Grayscale8);
     }
     else {
-        qImg = QImage((unsigned char*)(img.data), img.rows,
-            img.cols, img.cols * img.channels(), QImage::Format_RGB888);
+        *qImage = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.cols * mat.channels(), QImage::Format_RGB888);
     }
-    return qImg;
 }
 
 
 
 void mainWindow::updateMaskItem()
 {
-    scene->updateForeImg(img2QImg(muHelper->mask));
+    QImage qimage;
+    mat2QImage(muHelper->mask, &qimage);
+    scene->updateForeImg(qimage);
 }
 
 void mainWindow::resetMask() {

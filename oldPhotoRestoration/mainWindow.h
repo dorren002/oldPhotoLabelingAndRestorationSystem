@@ -25,7 +25,7 @@ private:
     ImageScene* scene;
     maskUpdater* muHelper;
 
-    QImage img2QImg(cv::Mat& img);;
+    void mat2QImage(cv::Mat& img, QImage* qImage);;
     void updateMaskItem();
     bool openImageFile(std::string fname);
     void mousePressEvent(QMouseEvent* event);
