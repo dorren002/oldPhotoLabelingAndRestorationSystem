@@ -111,7 +111,9 @@ void mainWindow::mat2QImage(Mat& mat, QImage* qImage)
 void mainWindow::updateMaskItem()
 {
     QImage qimage;
-    mat2QImage(muHelper->mask, &qimage);
+    Mat mask;
+    muHelper->getMask(&mask);
+    mat2QImage(mask, &qimage);
     scene->updateForeImg(qimage);
 }
 

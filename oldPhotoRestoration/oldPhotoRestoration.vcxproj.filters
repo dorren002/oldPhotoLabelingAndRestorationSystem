@@ -55,6 +55,9 @@
     <ClCompile Include="util.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageScene.h">

@@ -9,3 +9,9 @@ struct RGB_POS
     float R, G, B;
     int X, Y;
 };
+
+struct HSV_POS
+{
+    float H, S, V;
+    int X, Y;
+};

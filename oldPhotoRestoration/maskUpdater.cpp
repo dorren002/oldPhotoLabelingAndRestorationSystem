@@ -3,41 +3,57 @@
 
 #include "qdebug.h"
 
-maskUpdater::maskUpdater(int usrSetTH, int usrSetMaskFlag, int usrSetHistoryStep) {
-    th = usrSetTH;
-    maskFlag = usrSetMaskFlag;
-    historyStep = usrSetHistoryStep;
+maskUpdater::maskUpdater() {
+    defaultInitalization();
 }
 
-maskUpdater::maskUpdater(string fname, int usrSetTH, int usrSetMaskFlag, int usrSetHistoryStep) {
-    th = usrSetTH;
+maskUpdater::maskUpdater(string fname) {
+    defaultInitalization();    
     updateSrcImg(fname);
-    maskFlag = usrSetMaskFlag;
-    historyStep = usrSetHistoryStep;
+}
+
+void maskUpdater::defaultInitalization() {
+    th_rgb = 400;
+    th_hsv = 0.8;
+    maskFlag = 1;
+    historyStep = 128;
+    rgbMode = true;
 }
 
 bool maskUpdater::updateSrcImg(string fname) {
     Mat newImg = imread(fname);
+
     if (newImg.empty())
     {
         return VOS_FAIL;
     }
+
     imgHeight = newImg.rows;
     imgWidth = newImg.cols;
 
-    cvtColor(newImg, srcImg, COLOR_BGR2RGB);
+    cvtColor(newImg, rgbImg, COLOR_BGR2RGB);
+    cvtColor(newImg, hsvImg, COLOR_BGR2HSV);
+
     resetMask();
     
     return VOS_OK;
 }
 
 void maskUpdater::updateMask(int x, int y, bool isAdd) {
-    if (isAdd) {
-        add_mask(x, y);
+    if (rgbMode) {
+        if (isAdd) {
+            add_mask(x, y);
+        }
+        else {
+            del_mask(x, y);
+        }
     }
     else {
-        del_mask(x, y);
+        vector<Mat> mv;
+        split(hsvImg, mv);
+        hsvThresholdOp(mv.at(2), isAdd);
     }
+    
 }
 
 inline int dist(RGB_POS a, RGB_POS b) {
@@ -50,7 +66,7 @@ void maskUpdater::add_mask(int x, int y) {
     int di[4] = { 0, 0, 1, -1 };
     int dj[4] = { 1, -1, 0, 0 };
 
-    cv::Vec3b& pixel = srcImg.at<cv::Vec3b>(cv::Point(x, y));
+    cv::Vec3b& pixel = rgbImg.at<cv::Vec3b>(cv::Point(x, y));
     RGB_POS pivot = { pixel[0], pixel[1], pixel[2], x, y };
 
     queue<int> queuei;
@@ -69,11 +85,11 @@ void maskUpdater::add_mask(int x, int y) {
             continue;
         }
 
-        pixel = srcImg.at<cv::Vec3b>(cv::Point(cur_i, cur_j));
+        pixel = rgbImg.at<cv::Vec3b>(cv::Point(cur_i, cur_j));
         RGB_POS cur = { pixel[0], pixel[1], pixel[2], cur_i, cur_j };
 
-        if (!visited[cur_i][cur_j] && dist(pivot, cur) < th) {
-            mask.at<uchar>(cv::Point(cur_i, cur_j)) = maskFlag;
+        if (!visited[cur_i][cur_j] && dist(pivot, cur) < th_rgb) {
+            rgbMask.at<uchar>(cv::Point(cur_i, cur_j)) = maxStep;
             visited[cur_i][cur_j] = true;
             
             for (int index = 0; index != 4; ++index) {
@@ -84,23 +100,96 @@ void maskUpdater::add_mask(int x, int y) {
                 queuei.push(next_i);
                 queuej.push(next_j);
             }
+            qDebug() << rgbMask.at<uchar>(cv::Point(cur_i, cur_j));
         }
     }
+    maxStep++;
 }
 
 void maskUpdater::del_mask(int x, int y) {
+    int di[4] = { 0, 0, 1, -1 };
+    int dj[4] = { 1, -1, 0, 0 };
 
+    cv::Vec3b& pixel = rgbImg.at<cv::Vec3b>(cv::Point(x, y));
+    RGB_POS pivot = { pixel[0], pixel[1], pixel[2], x, y };
+
+    queue<int> queuei;
+    queue<int> queuej;
+    queuei.push(x);
+    queuej.push(y);
+
+    vector<vector<bool>> visited(imgHeight, vector<bool>(imgWidth, false));
+
+    while (!queuei.empty()) {
+        int cur_i = queuei.front(), cur_j = queuej.front();
+        queuei.pop();
+        queuej.pop();
+
+        if (visited[cur_i][cur_j]) {
+            continue;
+        }
+
+        pixel = rgbImg.at<cv::Vec3b>(cv::Point(cur_i, cur_j));
+        RGB_POS cur = { pixel[0], pixel[1], pixel[2], cur_i, cur_j };
+
+        if (!visited[cur_i][cur_j] && dist(pivot, cur) < th_rgb) {
+            rgbMask.at<uchar>(cv::Point(cur_i, cur_j)) = maxBackStep;
+            visited[cur_i][cur_j] = true;
+
+            for (int index = 0; index != 4; ++index) {
+                int next_i = cur_i + di[index], next_j = cur_j + dj[index];
+                if (next_i < 0 || next_j < 0 || next_i == imgHeight || next_j == imgWidth || visited[next_i][next_j]) {
+                    continue;
+                }
+                queuei.push(next_i);
+                queuej.push(next_j);
+            }
+        }
+    }
+    maxBackStep--;
+}
+
+void maskUpdater::hsvThresholdOp(Mat& vChannel, bool isAdd) {
+    if (isAdd) {
+        threshold(vChannel, hsvMask, th_hsv, 1, cv::THRESH_BINARY);
+    }
+    else {
+        threshold(vChannel, hsvMask, th_hsv, 1, cv::THRESH_BINARY_INV);
+    }
 }
 
 bool maskUpdater::resetMask() {
-    if (srcImg.empty() || imgHeight == -1 || imgWidth == -1) {
+    if (rgbImg.empty() || imgHeight == -1 || imgWidth == -1) {
         return VOS_FAIL;
     }
-    if (maskFlag == 1) {
-        mask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
-    }
-    else {
-        mask = Mat::ones(cv::Size(imgWidth, imgHeight), CV_8UC1) * 255;
-    }
+
+    rgbMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+    hsvMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+
+    maxStep = 1;
+    maxBackStep = -1;
+
     return VOS_OK;
+}
+
+void maskUpdater::updateRGBth(int value) {
+    th_rgb = value;
+}
+
+void maskUpdater::updateHSVth(float value) {
+    th_hsv = value;
+}
+
+void maskUpdater::switchRGBMode(bool mode) {
+    rgbMode = mode;
+}
+
+void maskUpdater::setHistoryStep(int num) {
+    historyStep = num;
+}
+
+void maskUpdater::getMask(Mat* mask) {
+    Mat temp;
+    cv::bitwise_or(rgbMask, hsvMask, temp);
+    threshold(temp, *mask, 1, 255, cv::THRESH_BINARY);
 }

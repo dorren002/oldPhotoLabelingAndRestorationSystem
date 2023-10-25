@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <string>
+#include <unordered_map>
 #include <opencv2\opencv.hpp>
 
 using namespace cv;
@@ -8,24 +9,47 @@ using namespace std;
 class maskUpdater
 {
 public:
-	Mat srcImg;
-	Mat mask;
+	maskUpdater();
+	maskUpdater(string fname);
 
-	maskUpdater(int th = 400, int usrSetMaskFlag = 0, int usrSetHistoryStep = 10);
-	maskUpdater(string fname, int th = 0.45, int usrSetMaskFlag = 0, int usrSetHistoryStep = 10);
-	bool updateSrcImg(string fname);
+	void getMask(Mat* mask);
+
 	void updateMask(int x, int y, bool isAdd); // 0 - cancel / 1 - add
+
+	bool updateSrcImg(string fname);
 	bool resetMask();
 
-
+	void updateRGBth(int value);
+	void updateHSVth(float value);
+	void switchRGBMode(bool mode); // 0-hsv, 1-rgb
+	void setHistoryStep(int num);
+	
 private:
-	int th;
-	int maskFlag; //    0/1代表被掩模部分
+	int th_rgb;
+	float th_hsv;
+
+	int maskFlag; //    0/1代表被掩模部分,仅在显示时参考该值
 	int historyStep;
+	
+	bool rgbMode; // 0-hsv  1-rgb
+
+	int maxStep;
+	int maxBackStep;
+	unordered_map<int, pair<int,int>> maxStep2xy;
+
+	Mat rgbImg;
+	Mat hsvImg;
+
+	Mat rgbMask;
+	Mat hsvMask;
+
 	int imgWidth = -1;
 	int imgHeight = -1;
 
 	void add_mask(int x, int y);
 	void del_mask(int x, int y);
+	void hsvThresholdOp(Mat& vChannel, bool isAdd);
+	
+	void defaultInitalization();
 };
 
