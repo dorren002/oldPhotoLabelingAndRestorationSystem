@@ -19,14 +19,17 @@ public:
 	bool updateSrcImg(string fname);
 	bool resetMask();
 
-	void updateRGBth(int value);
-	void updateHSVth(float value);
+	void updateRGBth(double value);
+	void updateHSVth(double value);
 	void switchRGBMode(bool mode); // 0-hsv, 1-rgb
 	void setHistoryStep(int num);
+
+	double getRGBth();
+	double getHSVth();
 	
 private:
-	int th_rgb;
-	float th_hsv;
+	double th_rgb;
+	double th_hsv;
 
 	int maskFlag; //    0/1代表被掩模部分,仅在显示时参考该值
 	int historyStep;

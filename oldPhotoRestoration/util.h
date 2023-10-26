@@ -6,12 +6,12 @@
 
 struct RGB_POS
 {
-    float R, G, B;
+    double R, G, B;
     int X, Y;
 };
 
 struct HSV_POS
 {
-    float H, S, V;
+    double H, S, V;
     int X, Y;
 };

@@ -19,7 +19,11 @@ mainWindow::mainWindow(QWidget* parent)
     ui.setupUi(this);
 
     // TODO：窗口自适应
-    setWindowTitle("Old");
+    setWindowTitle("老旧图像标注/修复系统");
+    
+    //initSliderValue();
+    setRGBSliderMaxVal(1000);
+    ui.hsvSlider->setMaxVal(1);
 
     // ui美化
     ui.btnBack->setIcon(QIcon(":/mainWindow/image/back-fococlipping-standard.png"));
@@ -35,6 +39,7 @@ mainWindow::mainWindow(QWidget* parent)
 
     // 掩模操作类
     muHelper = new maskUpdater();
+
 }
 
 mainWindow::~mainWindow()
@@ -120,4 +125,13 @@ void mainWindow::updateMaskItem()
 void mainWindow::resetMask() {
     muHelper->resetMask();
     updateMaskItem();
+}
+
+void mainWindow::setRGBSliderMaxVal(double val) {
+    ui.rgbSlider->setMaxVal(val);
+}
+
+void mainWindow::initSliderValue() {
+    ui.rgbSlider->initValue(muHelper->getRGBth());
+    ui.hsvSlider->initValue(muHelper->getHSVth());
 }

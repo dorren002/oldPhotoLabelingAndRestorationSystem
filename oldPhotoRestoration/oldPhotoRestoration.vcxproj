@@ -94,9 +94,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="boxSlider.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="util.h" />
     <QtRcc Include="oldPhotoRestoration.qrc" />
+    <QtUic Include="boxSlider.ui" />
     <QtUic Include="mainWindow.ui" />
     <QtMoc Include="mainWindow.h" />
     <ClCompile Include="ImageItem.cpp" />
@@ -109,6 +111,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="boxSlider.h" />
     <ClInclude Include="ImageItem.h" />
     <ClInclude Include="ImageScene.h" />
     <ClInclude Include="ImageView.h" />

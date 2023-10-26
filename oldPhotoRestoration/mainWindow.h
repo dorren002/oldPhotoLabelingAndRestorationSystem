@@ -29,4 +29,6 @@ private:
     void updateMaskItem();
     bool openImageFile(std::string fname);
     void mousePressEvent(QMouseEvent* event);
+    void initSliderValue();
+    void setRGBSliderMaxVal(double val);
 };

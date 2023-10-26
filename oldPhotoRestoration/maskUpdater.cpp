@@ -13,7 +13,7 @@ maskUpdater::maskUpdater(string fname) {
 }
 
 void maskUpdater::defaultInitalization() {
-    th_rgb = 400;
+    th_rgb = 400.0;
     th_hsv = 0.8;
     maskFlag = 1;
     historyStep = 128;
@@ -172,11 +172,11 @@ bool maskUpdater::resetMask() {
     return VOS_OK;
 }
 
-void maskUpdater::updateRGBth(int value) {
+void maskUpdater::updateRGBth(double value) {
     th_rgb = value;
 }
 
-void maskUpdater::updateHSVth(float value) {
+void maskUpdater::updateHSVth(double value) {
     th_hsv = value;
 }
 
@@ -192,4 +192,12 @@ void maskUpdater::getMask(Mat* mask) {
     Mat temp;
     cv::bitwise_or(rgbMask, hsvMask, temp);
     threshold(temp, *mask, 1, 255, cv::THRESH_BINARY);
+}
+
+double maskUpdater::getRGBth() {
+    return th_rgb;
+}
+
+double maskUpdater::getHSVth() {
+    return th_hsv;
 }
