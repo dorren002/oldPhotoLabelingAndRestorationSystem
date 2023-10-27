@@ -8,14 +8,19 @@ class boxSlider : public QWidget
 	Q_OBJECT
 
 public:
-	double value;
-
 	boxSlider(QWidget *parent = nullptr);
 	~boxSlider();
-	void initValue(double val);
+
+	void setValue(double val);
 	void setMaxVal(double val);
+	void setStep(double val);
+
+	double getValue();
 
 private:
+	double thval;
+	double RATIO;
+
 	Ui::boxSliderClass ui;
 
 private slots:

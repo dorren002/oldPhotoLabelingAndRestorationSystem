@@ -1,14 +1,7 @@
 ﻿#include "mainWindow.h"
 
-#include "qfiledialog.h"
-#include "qmessagebox.h"
-#include "qdebug.h"
-#include "util.h"
-
 #include <QMouseEvent>
 #include <QGraphicsPixmapItem>
-
-#include <opencv2\opencv.hpp>
 
 using namespace cv;
 using namespace std;
@@ -20,26 +13,71 @@ mainWindow::mainWindow(QWidget* parent)
 
     // TODO：窗口自适应
     setWindowTitle("老旧图像标注/修复系统");
+    workDir = "F:/";
     
-    //initSliderValue();
+    // 掩模操作类
+    muHelper = new maskUpdater();
+
     setRGBSliderMaxVal(1000);
     ui.hsvSlider->setMaxVal(1);
+    ui.hsvSlider->setStep(0.01);
+
+    initSliderValue();
 
     // ui美化
-    ui.btnBack->setIcon(QIcon(":/mainWindow/image/back-fococlipping-standard.png"));
+    ui.btnBack->setIcon(QIcon(":/mainWindow/image/back.png"));
+    ui.btnRedo->setIcon(QIcon(":/mainWindow/image/redo.png"));
+    ui.btnCompare->setIcon(QIcon(":/mainWindow/image/compare.png"));
+    ui.btnAddSelection->setIcon(QIcon(":/mainWindow/image/add.png"));
+    ui.btnDelSelection->setIcon(QIcon(":/mainWindow/image/del.png"));
+    
+    // 事件绑定
     connect(ui.actionSelectRootPath, &QAction::triggered, this, &mainWindow::actionFileClicked);
+    connect(ui.actionUserConfig, &QAction::triggered, this, &mainWindow::openUsrCfgDialog);
 
-    connect(ui.btnReset, SIGNAL(clicked()), this, SLOT(&mainWindow::resetMask));
-
+    // 按钮事件
+    connect(ui.btnBack, &QToolButton::clicked, this, [=]() {
+        muHelper->undo();
+        updateMaskItem();
+        });
+    connect(ui.btnReset, &QToolButton::clicked, this, [=]() {
+        muHelper->resetMask();
+        updateMaskItem();
+        });
+    connect(ui.btnSelectRGB, &QToolButton::clicked, this, [=]() {
+        muHelper->updateRGBth(ui.rgbSlider->getValue());
+        });
+    connect(ui.btnCancelRGB, &QToolButton::clicked, this, [=]() {
+        ui.rgbSlider->setValue(muHelper->getRGBth());
+        });
+    connect(ui.btnSelectHSV, &QToolButton::clicked, this, [=]() {
+        muHelper->updateHSVth(ui.hsvSlider->getValue());
+        });
+    connect(ui.btnCancelHSV, &QToolButton::clicked, this, [=]() {
+        ui.hsvSlider->setValue(muHelper->getHSVth()); 
+        });
+    connect(ui.btnErode, &QToolButton::clicked, this, [=]() {
+        muHelper->maskErode();
+        updateMaskItem();
+        });
+    connect(ui.btnDilate, &QToolButton::clicked, this, [=]() {
+        muHelper->maskDilate(); 
+        updateMaskItem();
+        });
+    connect(ui.btnSave, &QToolButton::clicked, this, [=]() {
+        if (muHelper->saveMask(workDir)) {
+            QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "保存成功！");
+        }
+        else {
+            QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "请核对工作目录！");
+        }
+        });
+    
     // 图像显示
     scene = new ImageScene();
     ui.labelingGraphicView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui.labelingGraphicView->setScene(scene);
     ui.labelingGraphicView->setMouseTracking(true);
-
-    // 掩模操作类
-    muHelper = new maskUpdater();
-
 }
 
 mainWindow::~mainWindow()
@@ -65,30 +103,8 @@ void mainWindow::mousePressEvent(QMouseEvent* event)
     }
 }
 
-void mainWindow::actionFileClicked() 
-{
-    QString filename = QFileDialog::getOpenFileName(this,
-        tr("Select Image"),
-        "",
-        tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
-    
-    if (filename.isEmpty())
-    {
-        return;
-    }
-    else
-    {
-        scene->backgroundImgPath = filename;
-        string fname = filename.toLocal8Bit().constData();
-        if (openImageFile(fname)) {
-            // TODO 接分割模型
-            updateMaskItem();
-        }
-    }
-}
-
 /*
-    读取图像文件
+    utils
 */
 bool mainWindow::openImageFile(string fname)
 {
@@ -111,27 +127,52 @@ void mainWindow::mat2QImage(Mat& mat, QImage* qImage)
     }
 }
 
-
-
 void mainWindow::updateMaskItem()
 {
     QImage qimage;
-    Mat mask;
-    muHelper->getMask(&mask);
+    Mat mask = muHelper->getMask();
+    mask *= 255;
     mat2QImage(mask, &qimage);
     scene->updateForeImg(qimage);
 }
 
-void mainWindow::resetMask() {
-    muHelper->resetMask();
-    updateMaskItem();
-}
 
 void mainWindow::setRGBSliderMaxVal(double val) {
     ui.rgbSlider->setMaxVal(val);
 }
 
 void mainWindow::initSliderValue() {
-    ui.rgbSlider->initValue(muHelper->getRGBth());
-    ui.hsvSlider->initValue(muHelper->getHSVth());
+    ui.rgbSlider->setValue(muHelper->getRGBth());
+    ui.hsvSlider->setValue(muHelper->getHSVth());
+}
+
+/*
+    SLOTS
+*/
+void mainWindow::actionFileClicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+        tr("Select Image"),
+        "",
+        tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
+
+    if (filename.isEmpty())
+    {
+        return;
+    }
+    else
+    {
+        scene->backgroundImgPath = filename;
+        string fname = filename.toLocal8Bit().constData();
+        if (openImageFile(fname)) {
+            // TODO 接分割模型
+            updateMaskItem();
+        }
+    }
+}
+
+void mainWindow::openUsrCfgDialog() {
+    usrDialog = new userConfigDialog();
+    //connect(usrDialog->ui.okButton, SIGNAL(clicked()), this, SLOT(showImage()));//连接ok按钮和槽函数
+    usrDialog->show();
 }

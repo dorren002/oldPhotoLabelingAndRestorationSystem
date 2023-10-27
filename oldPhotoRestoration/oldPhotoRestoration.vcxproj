@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClCompile Include="boxSlider.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="userConfigDialog.cpp" />
     <ClCompile Include="util.h" />
     <QtRcc Include="oldPhotoRestoration.qrc" />
     <QtUic Include="boxSlider.ui" />
@@ -109,8 +110,10 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OpenCV-3.4.1\build\include;D:\OpenCV-3.4.1\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <QtUic Include="userConfigDialog.ui" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="userConfigDialog.h" />
     <QtMoc Include="boxSlider.h" />
     <ClInclude Include="ImageItem.h" />
     <ClInclude Include="ImageScene.h" />

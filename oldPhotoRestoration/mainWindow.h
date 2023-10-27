@@ -10,6 +10,13 @@
 #include "maskUpdater.h"
 #include "ui_mainWindow.h"
 
+#include "qfiledialog.h"
+#include "qmessagebox.h"
+#include "qdebug.h"
+#include "util.h"
+
+#include "userConfigDialog.h"
+
 class mainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,18 +24,23 @@ class mainWindow : public QMainWindow
 public:
     mainWindow(QWidget *parent = nullptr);
     ~mainWindow();
-    void actionFileClicked();
-    void resetMask();
 
 private:
     Ui::mainWindowClass ui;
     ImageScene* scene;
     maskUpdater* muHelper;
+    userConfigDialog* usrDialog;
 
-    void mat2QImage(cv::Mat& img, QImage* qImage);;
+    string runPath;
+    string workDir;
+
+    void mat2QImage(cv::Mat& img, QImage* qImage);
     void updateMaskItem();
     bool openImageFile(std::string fname);
     void mousePressEvent(QMouseEvent* event);
     void initSliderValue();
     void setRGBSliderMaxVal(double val);
+
+    void actionFileClicked();
+    void openUsrCfgDialog();
 };

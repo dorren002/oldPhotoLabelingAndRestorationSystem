@@ -1,6 +1,10 @@
 <RCC>
     <qresource prefix="/mainWindow">
-        <file>image/back-fococlipping-standard.png</file>
         <file>image/default.jpg</file>
+        <file>image/add.png</file>
+        <file>image/back.png</file>
+        <file>image/compare.png</file>
+        <file>image/redo.png</file>
+        <file>image/del.png</file>
     </qresource>
 </RCC>
