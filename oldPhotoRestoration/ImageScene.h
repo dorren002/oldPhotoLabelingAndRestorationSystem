@@ -7,7 +7,7 @@ public:
     int cursorX;
     int cursorY;
     QPixmap maskPixmap;
-    QString backgroundImgPath = "F:/input.png";
+    QString backgroundImgPath = "./image/default.jpg";
     QString foregroundImgPath = ""; // 非加载本地图像情况需要置为空
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event);

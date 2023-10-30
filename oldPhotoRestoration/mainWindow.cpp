@@ -16,7 +16,6 @@ mainWindow::mainWindow(QWidget* parent)
 
     // TODO：窗口自适应
     setWindowTitle("老旧图像标注/修复系统");
-    workDir = "F:/";
     
     // 掩模操作类
     muHelper = new maskUpdater();
@@ -40,8 +39,13 @@ mainWindow::mainWindow(QWidget* parent)
 
     // 按钮事件
     connect(ui.btnBack, &QToolButton::clicked, this, [=]() {
-        muHelper->undo();
-        updateMaskItem();
+        if (muHelper->undo()) {
+            updateMaskItem();
+        }
+        else {
+            QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "没有更多步骤可以撤回，请前往用户配置修改最大撤回步数！");
+        }
+        
         });
     connect(ui.btnReset, &QToolButton::clicked, this, [=]() {
         muHelper->resetMask();
@@ -92,7 +96,7 @@ void mainWindow::mousePressEvent(QMouseEvent* event)
 {
     int globalX = event->x();
     int globalY = event->y();
-    if (ui.labelingGraphicView->geometry().contains(QPoint(globalX, globalY))) {
+    if (!muHelper->empty() && ui.labelingGraphicView->geometry().contains(QPoint(globalX, globalY))) {
         if (event->button() & Qt::LeftButton)
         {
             // 左键选择

@@ -25,7 +25,7 @@ public:
 	void switchRGBMode(bool mode); // 0-hsv, 1-rgb
 	void setMaxCacheStep(int num);
 
-	void undo();
+	bool undo();
 
 	void maskDilate();
 	void maskErode();
@@ -33,6 +33,7 @@ public:
 	double getRGBth();
 	double getHSVth();
 	
+	bool empty();
 private:
 	double th_rgb;
 	double th_hsv;
@@ -48,6 +49,7 @@ private:
 	Mat hsvImg;
 	Mat rgbMask;
 	Mat hsvMask;
+
 	Mat curMask;
 
 	int imgWidth = -1;

@@ -362,12 +362,60 @@
       <widget class="QComboBox" name="maskFlag">
        <item>
         <property name="text">
-         <string>1</string>
+         <string>0</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>0</string>
+         <string>1</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="widget_10" native="true">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>60</y>
+      <width>141</width>
+      <height>38</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>缓存步数</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="maxHistoryStep">
+       <item>
+        <property name="text">
+         <string>10</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>20</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>30</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>40</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>50</string>
         </property>
        </item>
       </widget>

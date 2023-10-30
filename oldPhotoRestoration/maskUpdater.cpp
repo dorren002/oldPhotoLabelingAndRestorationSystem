@@ -250,15 +250,27 @@ void maskUpdater::cacheHistory() {
         historyList->pop_front();
         cachedStep--;
     }
-    historyList->push_back(curMask);
+    Mat temp;
+    curMask.copyTo(temp);
+    historyList->push_back(temp);
     cachedStep++;
 }
 
-void maskUpdater::undo() {
+bool maskUpdater::undo() {
     if (cachedStep <= 0) {
-        return;
+        return VOS_FAIL;
     }
-    curMask = historyList->back();
+    curMask = historyList->at(cachedStep-1);
     historyList->pop_back();
     cachedStep--;
+    return VOS_OK;
+}
+
+bool maskUpdater::empty() {
+    if (rgbImg.empty()) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
