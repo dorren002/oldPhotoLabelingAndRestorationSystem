@@ -8,8 +8,8 @@ boxSlider::boxSlider(QWidget *parent)
 	thval = 0;
 	RATIO = 100;
 	
-	connect(ui.doubleSpinBox, SIGNAL(valueChanged()), this, SLOT(slotDoubleSpinbox_slider()));
-	connect(ui.horizontalSlider, SIGNAL(valueChanged()), this, SLOT(slotslider_DoubleSpinBox()));
+	connect(ui.doubleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(slotDoubleSpinbox_slider()));
+	connect(ui.horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(slotslider_DoubleSpinBox()));
 }
 
 boxSlider::~boxSlider()
@@ -35,14 +35,12 @@ void boxSlider::setStep(double value) {
 
 void boxSlider::slotDoubleSpinbox_slider()
 {
-	qDebug() << "spin to slider";
 	thval = ui.doubleSpinBox->value();
-	ui.horizontalSlider->setValue((int)(thval));
+	ui.horizontalSlider->setValue((int)(thval * RATIO));
 }
 
 void boxSlider::slotslider_DoubleSpinBox()
 {
-	qDebug() << "slider to spin";
 	thval = ui.horizontalSlider->value() / RATIO;
-	ui.doubleSpinBox->setValue((double)(thval * RATIO));
+	ui.doubleSpinBox->setValue((double)(thval));
 }
