@@ -1,5 +1,8 @@
 ﻿#include "mainWindow.h"
 
+#include <iostream>  
+#include <fstream>  
+#include <string> 
 #include <QMouseEvent>
 #include <QGraphicsPixmapItem>
 
@@ -65,7 +68,7 @@ mainWindow::mainWindow(QWidget* parent)
         updateMaskItem();
         });
     connect(ui.btnSave, &QToolButton::clicked, this, [=]() {
-        if (muHelper->saveMask(workDir)) {
+        if (muHelper->saveMask(pmHelper.root_dir + '/' + pmHelper.output_dir, pmHelper.img_format)) {
             QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "保存成功！");
         }
         else {
@@ -78,6 +81,8 @@ mainWindow::mainWindow(QWidget* parent)
     ui.labelingGraphicView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     ui.labelingGraphicView->setScene(scene);
     ui.labelingGraphicView->setMouseTracking(true);
+
+    loadUsrCfg();
 }
 
 mainWindow::~mainWindow()
@@ -146,14 +151,12 @@ void mainWindow::initSliderValue() {
     ui.hsvSlider->setValue(muHelper->getHSVth());
 }
 
-/*
-    SLOTS
-*/
 void mainWindow::actionFileClicked()
 {
+    QString fileroot = QString::fromStdString(pmHelper.root_dir + '/'+ pmHelper.input_dir);
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select Image"),
-        "",
+        fileroot,
         tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
 
     if (filename.isEmpty())
@@ -171,8 +174,60 @@ void mainWindow::actionFileClicked()
     }
 }
 
+/*
+    子窗口传值：路径结构体
+*/
 void mainWindow::openUsrCfgDialog() {
     usrDialog = new userConfigDialog();
-    //connect(usrDialog->ui.okButton, SIGNAL(clicked()), this, SLOT(showImage()));//连接ok按钮和槽函数
+   
+    //主窗口向子窗口传结构体
+    connect(this, SIGNAL(sendCfg(QVariant)), usrDialog, SLOT(initUsrCfg(QVariant)));
+    //子窗口向主窗口传结构体
+    connect(usrDialog, SIGNAL(sendUpdatedCfg(QVariant)), this, SLOT(recvUpdatedCfg(QVariant)));
+   
+    QVariant variant = QVariant::fromValue(pmHelper);
+    emit sendCfg(variant);
+
     usrDialog->show();
+}
+
+void mainWindow::recvUpdatedCfg(QVariant updatedCfg) {
+    pmHelper = updatedCfg.value<UserCfg>();
+    saveUsrCfg();
+}
+
+/*
+    用户配置文件加载和保存
+*/
+void mainWindow::loadUsrCfg() { 
+    ifstream inputFile("./configs/configs.txt"); // 打开名为 example.txt 的文件  
+
+    if (inputFile.is_open()) { // 检查文件是否成功打开  
+        string line;
+        vector<string> lines;
+        while (getline(inputFile, line)) { // 逐行读取文件内容  
+            lines.push_back(line);
+        }
+        inputFile.close(); // 关闭文件  
+        pmHelper = { atoi(lines[0].c_str()), atoi(lines[1].c_str()), lines[2], lines[3],
+            lines[4], lines[5], lines[6] };
+    }
+    else {
+        pmHelper = { 1, 1, "./", "input","mask","save", "png"};
+    }
+}
+
+void mainWindow::saveUsrCfg() {
+    ofstream outfile("./configs/configs.txt");;
+    outfile << pmHelper.mask_flag << endl;
+    outfile << pmHelper.channel_num << endl;
+    outfile << pmHelper.root_dir << endl;
+    outfile << pmHelper.input_dir << endl;
+    outfile << pmHelper.mask_dir << endl;
+    outfile << pmHelper.output_dir << endl;
+    outfile << pmHelper.img_format << endl;
+    outfile.flush();
+    outfile.close();
+
+    // TODO 新建不存在的路径
 }

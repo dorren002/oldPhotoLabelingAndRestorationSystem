@@ -202,10 +202,10 @@ bool maskUpdater::resetMask() {
     return VOS_OK;
 }
 
-bool maskUpdater::saveMask(string root) {
+bool maskUpdater::saveMask(string root, string imgFormat) {
     const char* p = root.c_str();
     if ((_access(p, 0)) != -1) {
-        imwrite(root + "output.png", curMask);
+        imwrite(root + "/output." + imgFormat, curMask);
         return VOS_OK;
     }
     else {

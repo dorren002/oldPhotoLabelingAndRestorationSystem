@@ -14,7 +14,7 @@ public:
 	maskUpdater(string fname);
 
 	Mat& getMask();
-	bool saveMask(string root);
+	bool saveMask(string root, string imgFormat);
 	bool resetMask();
 	void updateMask(int x, int y, bool isAdd); // 0 - cancel / 1 - add
 	

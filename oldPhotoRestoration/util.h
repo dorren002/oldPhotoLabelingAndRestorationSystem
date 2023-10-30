@@ -1,3 +1,8 @@
+#pragma once
+#include <string>
+
+using namespace std;
+
 #define VOS_OK 1;
 #define VOS_FAIL 0;
 
@@ -17,4 +22,18 @@ struct HSV_POS
 {
     double H, S, V;
     int X, Y;
+};
+
+//struct networkCfg
+//{};
+struct UsrCfg
+{
+    int mask_flag;
+    int channel_num;
+    string root_dir;
+    string input_dir;
+    string mask_dir;
+    string output_dir;
+    string img_format;
+    // networkCfg serverCfg;
 };

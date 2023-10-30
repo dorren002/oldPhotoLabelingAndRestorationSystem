@@ -362,12 +362,12 @@
       <widget class="QComboBox" name="maskFlag">
        <item>
         <property name="text">
-         <string>1</string>
+         <string>0</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>0</string>
+         <string>1</string>
         </property>
        </item>
       </widget>

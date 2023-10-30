@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include <opencv2\opencv.hpp>
 #include <string>
+#include <QVariant>
 
 #include "ImageItem.h"
 #include "ImageScene.h"
@@ -20,6 +21,8 @@
 class mainWindow : public QMainWindow
 {
     Q_OBJECT
+signals:
+    void sendCfg(QVariant);//向子窗口传结构体
 
 public:
     mainWindow(QWidget *parent = nullptr);
@@ -30,6 +33,7 @@ private:
     ImageScene* scene;
     maskUpdater* muHelper;
     userConfigDialog* usrDialog;
+    UserCfg pmHelper;
 
     string runPath;
     string workDir;
@@ -43,4 +47,10 @@ private:
 
     void actionFileClicked();
     void openUsrCfgDialog();
+
+    void loadUsrCfg();
+    void saveUsrCfg();
+
+private slots:
+    void recvUpdatedCfg(QVariant updatedCfg);
 };
