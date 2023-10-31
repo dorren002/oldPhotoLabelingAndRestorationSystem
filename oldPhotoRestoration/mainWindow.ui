@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>918</width>
-    <height>524</height>
+    <width>900</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,337 +16,343 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QWidget" name="backGround" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>901</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="cursor">
        <cursorShape>ArrowCursor</cursorShape>
       </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tab">
-       <property name="cursor">
-        <cursorShape>ArrowCursor</cursorShape>
+      <widget class="QWidget" name="widget_2" native="true">
+       <property name="geometry">
+        <rect>
+         <x>540</x>
+         <y>10</y>
+         <width>291</width>
+         <height>441</height>
+        </rect>
        </property>
-       <attribute name="title">
-        <string>Labeling</string>
-       </attribute>
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="widget_3" native="true">
         <property name="geometry">
          <rect>
-          <x>540</x>
-          <y>10</y>
-          <width>291</width>
-          <height>421</height>
+          <x>19</x>
+          <y>9</y>
+          <width>270</width>
+          <height>31</height>
          </rect>
         </property>
-        <widget class="QWidget" name="widget_3" native="true">
+        <widget class="QToolButton" name="btnBack">
          <property name="geometry">
           <rect>
-           <x>19</x>
-           <y>9</y>
-           <width>270</width>
+           <x>9</x>
+           <y>0</y>
+           <width>37</width>
            <height>31</height>
           </rect>
          </property>
-         <widget class="QToolButton" name="btnBack">
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnRedo">
+         <property name="geometry">
+          <rect>
+           <x>52</x>
+           <y>0</y>
+           <width>37</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnCompare">
+         <property name="geometry">
+          <rect>
+           <x>95</x>
+           <y>0</y>
+           <width>37</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnDelSelection">
+         <property name="geometry">
+          <rect>
+           <x>224</x>
+           <y>0</y>
+           <width>37</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnNewSelection">
+         <property name="geometry">
+          <rect>
+           <x>138</x>
+           <y>0</y>
+           <width>37</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnAddSelection">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>0</y>
+           <width>37</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QTabWidget" name="tabColorSpace">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>50</y>
+          <width>261</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tabRGB">
+         <attribute name="title">
+          <string>RGB</string>
+         </attribute>
+         <widget class="QToolButton" name="btnSelectRGB">
           <property name="geometry">
            <rect>
-            <x>9</x>
-            <y>0</y>
-            <width>37</width>
+            <x>30</x>
+            <y>90</y>
+            <width>71</width>
             <height>31</height>
            </rect>
           </property>
           <property name="text">
-           <string>...</string>
+           <string>确认</string>
           </property>
          </widget>
-         <widget class="QToolButton" name="btnRedo">
+         <widget class="QToolButton" name="btnCancelRGB">
           <property name="geometry">
            <rect>
-            <x>52</x>
-            <y>0</y>
-            <width>37</width>
+            <x>140</x>
+            <y>90</y>
+            <width>71</width>
             <height>31</height>
            </rect>
           </property>
           <property name="text">
-           <string>...</string>
+           <string>取消</string>
           </property>
          </widget>
-         <widget class="QToolButton" name="btnCompare">
+         <widget class="boxSlider" name="rgbSlider" native="true">
           <property name="geometry">
            <rect>
-            <x>95</x>
-            <y>0</y>
-            <width>37</width>
-            <height>31</height>
+            <x>20</x>
+            <y>20</y>
+            <width>211</width>
+            <height>51</height>
            </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="btnDelSelection">
-          <property name="geometry">
-           <rect>
-            <x>224</x>
-            <y>0</y>
-            <width>37</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="btnNewSelection">
-          <property name="geometry">
-           <rect>
-            <x>138</x>
-            <y>0</y>
-            <width>37</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="btnAddSelection">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>0</y>
-            <width>37</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>...</string>
           </property>
          </widget>
         </widget>
-        <widget class="QTabWidget" name="tabColorSpace">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>90</y>
-           <width>261</width>
-           <height>161</height>
-          </rect>
-         </property>
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
-         <widget class="QWidget" name="tabRGB">
-          <attribute name="title">
-           <string>RGB</string>
-          </attribute>
-          <widget class="QToolButton" name="btnSelectRGB">
+        <widget class="QWidget" name="tabHSV">
+         <attribute name="title">
+          <string>HSV</string>
+         </attribute>
+         <widget class="boxSlider" name="hsvSlider" native="true">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>211</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4"/>
+         </widget>
+         <widget class="QWidget" name="widget_7" native="true">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>231</width>
+            <height>61</height>
+           </rect>
+          </property>
+          <widget class="QToolButton" name="btnSelectHSV">
            <property name="geometry">
             <rect>
-             <x>30</x>
-             <y>90</y>
+             <x>20</x>
+             <y>20</y>
              <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="text">
-            <string>select</string>
+            <string>确认</string>
            </property>
           </widget>
-          <widget class="QToolButton" name="btnCancelRGB">
+          <widget class="QToolButton" name="btnCancelHSV">
            <property name="geometry">
             <rect>
-             <x>140</x>
-             <y>90</y>
+             <x>130</x>
+             <y>20</y>
              <width>71</width>
              <height>31</height>
             </rect>
            </property>
            <property name="text">
-            <string>cancel</string>
+            <string>取消</string>
            </property>
           </widget>
-          <widget class="boxSlider" name="rgbSlider" native="true">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>211</width>
-             <height>51</height>
-            </rect>
-           </property>
-          </widget>
-         </widget>
-         <widget class="QWidget" name="tabHSV">
-          <attribute name="title">
-           <string>HSV</string>
-          </attribute>
-          <widget class="boxSlider" name="hsvSlider" native="true">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>211</width>
-             <height>51</height>
-            </rect>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_4"/>
-          </widget>
-          <widget class="QWidget" name="widget_7" native="true">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>70</y>
-             <width>231</width>
-             <height>61</height>
-            </rect>
-           </property>
-           <widget class="QToolButton" name="btnSelectHSV">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>20</y>
-              <width>71</width>
-              <height>31</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>select</string>
-            </property>
-           </widget>
-           <widget class="QToolButton" name="btnCancelHSV">
-            <property name="geometry">
-             <rect>
-              <x>130</x>
-              <y>20</y>
-              <width>71</width>
-              <height>31</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>cancel</string>
-            </property>
-           </widget>
-          </widget>
-         </widget>
-        </widget>
-        <widget class="QLabel" name="label_2">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>51</y>
-           <width>54</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_3">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>260</y>
-           <width>54</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-        <widget class="QWidget" name="widget_4" native="true">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>290</y>
-           <width>261</width>
-           <height>60</height>
-          </rect>
-         </property>
-         <widget class="QToolButton" name="btnErode">
-          <property name="geometry">
-           <rect>
-            <x>140</x>
-            <y>10</y>
-            <width>71</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>腐蚀</string>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="btnDilate">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>10</y>
-            <width>71</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>膨胀</string>
-          </property>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="widget_5" native="true">
-         <property name="geometry">
-          <rect>
-           <x>20</x>
-           <y>360</y>
-           <width>261</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <widget class="QToolButton" name="btnReset">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>10</y>
-            <width>71</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>reset</string>
-          </property>
-         </widget>
-         <widget class="QToolButton" name="btnSave">
-          <property name="geometry">
-           <rect>
-            <x>140</x>
-            <y>10</y>
-            <width>71</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>save</string>
-          </property>
          </widget>
         </widget>
        </widget>
-       <widget class="ImageView" name="labelingGraphicView">
+       <widget class="QLabel" name="label_3">
         <property name="geometry">
          <rect>
-          <x>15</x>
-          <y>10</y>
-          <width>491</width>
-          <height>411</height>
+          <x>20</x>
+          <y>360</y>
+          <width>54</width>
+          <height>16</height>
          </rect>
+        </property>
+        <property name="text">
+         <string>修复后</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>240</y>
+          <width>261</width>
+          <height>60</height>
+         </rect>
+        </property>
+        <widget class="QToolButton" name="btnErode">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>10</y>
+           <width>71</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>腐蚀</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnDilate">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>10</y>
+           <width>71</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>膨胀</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="widget_5" native="true">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>300</y>
+          <width>261</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <widget class="QToolButton" name="btnReset">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>10</y>
+           <width>71</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>重置</string>
+         </property>
+        </widget>
+        <widget class="QToolButton" name="btnSaveMask">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>10</y>
+           <width>71</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>保存</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QToolButton" name="btnRestore">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>390</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>修复</string>
+        </property>
+       </widget>
+       <widget class="QToolButton" name="btnSave">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>390</y>
+          <width>71</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>保存</string>
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Restoring</string>
-       </attribute>
+      <widget class="ImageView" name="labelingGraphicView">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>491</width>
+         <height>441</height>
+        </rect>
+       </property>
       </widget>
      </widget>
     </item>
@@ -357,7 +363,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>918</width>
+     <width>900</width>
      <height>23</height>
     </rect>
    </property>

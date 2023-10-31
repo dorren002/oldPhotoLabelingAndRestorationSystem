@@ -3,6 +3,7 @@
 #include <iostream>  
 #include <fstream>  
 #include <string> 
+
 #include <QMouseEvent>
 #include <QGraphicsPixmapItem>
 
@@ -19,6 +20,7 @@ mainWindow::mainWindow(QWidget* parent)
     
     // 掩模操作类
     muHelper = new maskUpdater();
+    networkManager = new QNetworkAccessManager(this);
 
     setRGBSliderMaxVal(1000);
     ui.hsvSlider->setMaxVal(1);
@@ -36,6 +38,7 @@ mainWindow::mainWindow(QWidget* parent)
     // 事件绑定
     connect(ui.actionSelectRootPath, &QAction::triggered, this, &mainWindow::actionFileClicked);
     connect(ui.actionUserConfig, &QAction::triggered, this, &mainWindow::openUsrCfgDialog);
+    connect(ui.actionSelectServer, &QAction::triggered, this, &mainWindow::openServerCfgDialog);
 
     // 按钮事件
     connect(ui.btnBack, &QToolButton::clicked, this, [=]() {
@@ -71,7 +74,7 @@ mainWindow::mainWindow(QWidget* parent)
         muHelper->maskDilate(); 
         updateMaskItem();
         });
-    connect(ui.btnSave, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnSaveMask, &QToolButton::clicked, this, [=]() {
         if (muHelper->saveMask(pmHelper.root_dir + '/' + pmHelper.output_dir, pmHelper.img_format)) {
             QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "保存成功！");
         }
@@ -126,6 +129,10 @@ bool mainWindow::openImageFile(string fname)
     }
 }
 
+void mainWindow::image2Mat(QImage& qImage, Mat* mat) {
+    *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC1, (void*)qImage.bits(), qImage.bytesPerLine());
+}
+
 void mainWindow::mat2QImage(Mat& mat, QImage* qImage)
 {
     if (mat.channels() == 1) {
@@ -159,7 +166,7 @@ void mainWindow::actionFileClicked()
 {
     QString fileroot = QString::fromStdString(pmHelper.root_dir + '/'+ pmHelper.input_dir);
     QString filename = QFileDialog::getOpenFileName(this,
-        tr("Select Image"),
+        tr("选择一张图片"),
         fileroot,
         tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
 
@@ -172,17 +179,86 @@ void mainWindow::actionFileClicked()
         scene->backgroundImgPath = filename;
         string fname = filename.toLocal8Bit().constData();
         if (openImageFile(fname)) {
-            // TODO 接分割模型
-            updateMaskItem();
+            getServerProcImage(0);
         }
     }
 }
 
 /*
+    网络相关
+*/
+void mainWindow::getServerProcImage(bool mode) {
+    if (mode) {
+        // restore
+    }
+    else {
+       // seg
+    }
+
+    QUrl url("http://10.122.245.17:22081/seg");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "image/jpeg"); 
+    QByteArray imageData = cvMatToByteArray(muHelper->getImage());
+    reply = networkManager->post(request, imageData);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(upLoadError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(uploadProcess(qint64, qint64)));
+    connect(reply, SIGNAL(finished()), this, SLOT(slot_requestFinished()));
+
+}
+
+QByteArray mainWindow::cvMatToByteArray(const cv::Mat& image) {
+    // 将cv::Mat转换为QByteArray，这里使用PNG格式作为示例
+    Mat postImage;
+    cv::cvtColor(image, postImage, COLOR_RGB2BGR);
+    cv::imwrite("tmp/userImg.png", postImage);
+    QFile file("tmp/userImg.png");
+    if (file.open(QIODevice::ReadOnly)) {
+        return file.readAll();
+    }
+    else {
+        qDebug() << "Failed to open image file";
+        return QByteArray();
+    }
+}
+
+void mainWindow::slot_requestFinished()
+{
+    int nHttpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+    if (nHttpCode == 200) {
+        QByteArray resultContent = reply->readAll();
+        QImage image;
+        if (image.loadFromData(resultContent)) {
+            cv::Mat temp;
+            image2Mat(image, &temp);
+            muHelper->updateDetectedMask(&temp);
+            updateMaskItem();
+        }
+    }
+    else {
+        QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "将进入手动标注流程！");
+    }
+    reply->deleteLater();
+}
+
+
+void mainWindow::upLoadError(QNetworkReply::NetworkError code)
+{
+    qDebug() << code;
+}
+
+void mainWindow::uploadProcess(qint64 bytesReceived, qint64 bytesTotal)
+{
+    qDebug() << bytesReceived << bytesTotal;
+}
+
+
+/*
     子窗口传值：路径结构体
 */
 void mainWindow::openUsrCfgDialog() {
-    usrDialog = new userConfigDialog();
+    userConfigDialog* usrDialog = new userConfigDialog();
+    usrDialog->setWindowTitle(tr("自定义配置"));
    
     //主窗口向子窗口传结构体
     connect(this, SIGNAL(sendCfg(QVariant)), usrDialog, SLOT(initUsrCfg(QVariant)));
@@ -197,6 +273,25 @@ void mainWindow::openUsrCfgDialog() {
 
 void mainWindow::recvUpdatedCfg(QVariant updatedCfg) {
     pmHelper = updatedCfg.value<UserCfg>();
+    saveUsrCfg();
+}
+
+void mainWindow::openServerCfgDialog() {
+    serverConfigDialog* srvrDialog = new serverConfigDialog();
+    srvrDialog->setWindowTitle(tr("服务器配置"));
+
+    //主窗口向子窗口传字符串
+    connect(this, SIGNAL(sendCfg(QString)), srvrDialog, SLOT(initServerCfg(QString)));
+    //子窗口向主窗口传字符串
+    connect(srvrDialog, SIGNAL(sendUpdatedCfg(QString)), this, SLOT(recvUpdatedCfg(QString)));
+    
+    emit sendCfg(QString::fromStdString(serverPath));
+
+    srvrDialog->show();
+}
+
+void mainWindow::recvUpdatedCfg(QString updatedCfg) {
+    serverPath = updatedCfg.toLocal8Bit().constData();
     saveUsrCfg();
 }
 
@@ -215,6 +310,7 @@ void mainWindow::loadUsrCfg() {
         inputFile.close(); // 关闭文件  
         pmHelper = { atoi(lines[0].c_str()), atoi(lines[1].c_str()), lines[2], lines[3],
             lines[4], lines[5], lines[6] };
+        serverPath = lines[7];
     }
     else {
         pmHelper = { 1, 1, "./", "input","mask","save", "png"};
@@ -230,6 +326,7 @@ void mainWindow::saveUsrCfg() {
     outfile << pmHelper.mask_dir << endl;
     outfile << pmHelper.output_dir << endl;
     outfile << pmHelper.img_format << endl;
+    outfile << serverPath << endl;
     outfile.flush();
     outfile.close();
 

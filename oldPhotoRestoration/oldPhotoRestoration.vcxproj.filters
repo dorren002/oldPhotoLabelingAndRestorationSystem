@@ -55,13 +55,13 @@
     <ClCompile Include="util.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="boxSlider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="userConfigDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serverConfigDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,12 +94,18 @@
     <QtMoc Include="userConfigDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="serverConfigDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="boxSlider.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="userConfigDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="serverConfigDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

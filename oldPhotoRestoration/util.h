@@ -23,17 +23,3 @@ struct HSV_POS
     double H, S, V;
     int X, Y;
 };
-
-//struct networkCfg
-//{};
-struct UsrCfg
-{
-    int mask_flag;
-    int channel_num;
-    string root_dir;
-    string input_dir;
-    string mask_dir;
-    string output_dir;
-    string img_format;
-    // networkCfg serverCfg;
-};

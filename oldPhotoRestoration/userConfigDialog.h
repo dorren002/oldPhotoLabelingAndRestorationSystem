@@ -41,13 +41,14 @@ public:
 
 	userConfigDialog();
 	~userConfigDialog();
-	Ui::Dialog ui;
+	
 
 public slots:
 	void initUsrCfg(QVariant initialCfg);
 
 
 private:
+	Ui::Dialog ui;
 	QSignalMapper* editEventMapper;
 	int getImgFormatIdx(string formatStr);
 	string getImgFormatStr(int idx);

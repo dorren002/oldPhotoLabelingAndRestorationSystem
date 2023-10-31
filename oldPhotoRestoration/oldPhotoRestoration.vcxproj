@@ -32,7 +32,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>5.14.2_msvc2017_64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;widgets;network</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -95,7 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="boxSlider.cpp" />
-    <ClCompile Include="test.cpp" />
+    <ClCompile Include="serverConfigDialog.cpp" />
     <ClCompile Include="userConfigDialog.cpp" />
     <ClCompile Include="util.h" />
     <QtRcc Include="oldPhotoRestoration.qrc" />
@@ -110,9 +110,11 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OpenCV-3.4.1\build\include;D:\OpenCV-3.4.1\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <QtUic Include="serverConfigDialog.ui" />
     <QtUic Include="userConfigDialog.ui" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="serverConfigDialog.h" />
     <QtMoc Include="userConfigDialog.h" />
     <QtMoc Include="boxSlider.h" />
     <ClInclude Include="ImageItem.h" />

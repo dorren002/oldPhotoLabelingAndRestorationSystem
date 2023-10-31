@@ -35,10 +35,19 @@ bool maskUpdater::updateSrcImg(string fname) {
 
     cvtColor(newImg, rgbImg, COLOR_BGR2RGB);
     cvtColor(newImg, hsvImg, COLOR_BGR2HSV);
-
-    resetMask();
     
     return VOS_OK;
+}
+
+void maskUpdater::updateDetectedMask(Mat* mask) {
+    if (mask) {
+        mask->copyTo(detectedMask);
+        resetMask();
+    }
+    else {
+        detectedMask = NULL;
+    }
+    
 }
 
 void maskUpdater::updateMask(int x, int y, bool isAdd) {
@@ -190,9 +199,17 @@ bool maskUpdater::resetMask() {
         return VOS_FAIL;
     }
 
-    rgbMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
-    hsvMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
-    curMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+    if (detectedMask.empty()) {
+        rgbMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+        hsvMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+        curMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
+    }
+    else {
+        detectedMask.copyTo(curMask);
+        detectedMask.copyTo(rgbMask);
+        detectedMask.copyTo(hsvMask);
+    }
+    
 
     cachedStep = 0;
     if (!historyList->empty()) {
@@ -230,6 +247,10 @@ void maskUpdater::setMaxCacheStep(int num) {
     maxCacheStep = num;
 }
 
+Mat& maskUpdater::getImage() {
+    return rgbImg;
+}
+
 Mat& maskUpdater::getMask() {
     return curMask;
 }
@@ -240,6 +261,14 @@ double maskUpdater::getRGBth() {
 
 double maskUpdater::getHSVth() {
     return th_hsv;
+}
+
+int maskUpdater::rows() {
+    return imgHeight;
+}
+
+int maskUpdater::cols() {
+    return imgWidth;
 }
 
 /*

@@ -13,9 +13,15 @@ public:
 	maskUpdater();
 	maskUpdater(string fname);
 
+	int rows();
+	int cols();
+
+	Mat& getImage();
 	Mat& getMask();
+
 	bool saveMask(string root, string imgFormat);
 	bool resetMask();
+	void updateDetectedMask(Mat* mask);
 	void updateMask(int x, int y, bool isAdd); // 0 - cancel / 1 - add
 	
 	bool updateSrcImg(string fname);
@@ -51,6 +57,7 @@ private:
 	Mat hsvMask;
 
 	Mat curMask;
+	Mat detectedMask;
 
 	int imgWidth = -1;
 	int imgHeight = -1;
