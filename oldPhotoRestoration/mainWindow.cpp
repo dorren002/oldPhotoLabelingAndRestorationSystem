@@ -15,6 +15,8 @@ mainWindow::mainWindow(QWidget* parent)
 {
     ui.setupUi(this);
 
+    viewSize = ui.labelingGraphicView->height();
+
     // TODO：窗口自适应
     setWindowTitle("老旧图像标注/修复系统");
     
@@ -82,6 +84,10 @@ mainWindow::mainWindow(QWidget* parent)
             QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "请核对工作目录！");
         }
         });
+    connect(ui.btnRestore, &QToolButton::clicked, this, [=]() {
+        serverRequestMode = 1;
+        getServerProcImage();
+        });
     
     // 图像显示
     scene = new ImageScene();
@@ -115,6 +121,23 @@ void mainWindow::mousePressEvent(QMouseEvent* event)
     }
 }
 
+
+/*
+    修复图像的显示和比较等
+*/
+void mainWindow::showRestoredImage() {
+    if (muHelper->restoreFlag) {
+        QImage qimage;
+        mat2QImage(muHelper->getRestoredImage(), &qimage);
+        restoredImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(qimage));
+        scene->addItem(restoredImageItem);
+    }
+}
+
+void mainWindow::compareRestoredImage() {
+    
+}
+
 /*
     utils
 */
@@ -130,7 +153,12 @@ bool mainWindow::openImageFile(string fname)
 }
 
 void mainWindow::image2Mat(QImage& qImage, Mat* mat) {
-    *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC1, (void*)qImage.bits(), qImage.bytesPerLine());
+    if (qImage.isGrayscale()) {
+        *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC1, (void*)qImage.bits(), qImage.bytesPerLine());
+    }
+    else {
+        *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC3, (void*)qImage.bits(), qImage.bytesPerLine());
+    }
 }
 
 void mainWindow::mat2QImage(Mat& mat, QImage* qImage)
@@ -179,7 +207,10 @@ void mainWindow::actionFileClicked()
         scene->backgroundImgPath = filename;
         string fname = filename.toLocal8Bit().constData();
         if (openImageFile(fname)) {
-            getServerProcImage(0);
+            serverRequestMode = 0;
+            ui.labelingGraphicView->setScaleRatio(muHelper->getRatio(viewSize));
+            updateMaskItem();
+            getServerProcImage();
         }
     }
 }
@@ -187,24 +218,33 @@ void mainWindow::actionFileClicked()
 /*
     网络相关
 */
-void mainWindow::getServerProcImage(bool mode) {
-    if (mode) {
+void mainWindow::getServerProcImage() {
+    QUrl url;
+    QByteArray imageData;
+    if (serverRequestMode==1) {
         // restore
+        url = "http://" + serverPath + "/restore";
+        Mat postImage;
+        muHelper->getMaskedImage(&postImage);
+        imageData = cvMatToByteArray(postImage);
     }
     else {
-       // seg
+       // detect
+        url = "http://" + serverPath + "/detect";
+        imageData = cvMatToByteArray(muHelper->getImage());
     }
-
-    QUrl url("http://10.122.245.17:22081/seg");
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "image/jpeg"); 
-    QByteArray imageData = cvMatToByteArray(muHelper->getImage());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "image/jpg"); 
     reply = networkManager->post(request, imageData);
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(upLoadError(QNetworkReply::NetworkError)));
-    connect(reply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(uploadProcess(qint64, qint64)));
-    connect(reply, SIGNAL(finished()), this, SLOT(slot_requestFinished()));
 
+    if (serverRequestMode == 1) {
+        connect(reply, SIGNAL(finished()), this, SLOT(slot_restoreRequestFinished()));
+    }
+    else {
+        connect(reply, SIGNAL(finished()), this, SLOT(slot_detectionRequestFinished()));
+    }
 }
 
 QByteArray mainWindow::cvMatToByteArray(const cv::Mat& image) {
@@ -222,7 +262,7 @@ QByteArray mainWindow::cvMatToByteArray(const cv::Mat& image) {
     }
 }
 
-void mainWindow::slot_requestFinished()
+void mainWindow::slot_detectionRequestFinished()
 {
     int nHttpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
     if (nHttpCode == 200) {
@@ -236,17 +276,67 @@ void mainWindow::slot_requestFinished()
         }
     }
     else {
-        QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "将进入手动标注流程！");
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle(tr("连接服务器失败"));
+        msgBox.setText(tr("请查看服务器配置并确认服务器可用，点击“重试”按钮重试或点击“取消”进入手动标注流程！"));
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.addButton(tr("重试"), QMessageBox::AcceptRole);
+        msgBox.addButton(tr("取消"), QMessageBox::RejectRole);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::AcceptRole)
+        {
+            getServerProcImage();
+        }
+        else if (ret == QMessageBox::RejectRole)
+        {
+            updateMaskItem();
+        }
     }
-    reply->deleteLater();
+}
+
+void mainWindow::slot_restoreRequestFinished()
+{
+    int nHttpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+    if (nHttpCode == 200) {
+        QByteArray resultContent = reply->readAll();
+        QImage image;
+        if (image.loadFromData(resultContent)) {
+            image.save("tmp/newnewnew.jpg");
+            cv::Mat temp;
+            image2Mat(image, &temp);
+            cv::imwrite("tmp/test.jpg", temp);
+            muHelper->updateRestoredImg(&temp);
+            showRestoredImage();
+        }
+    }
+    else {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle(tr("连接服务器失败"));
+        msgBox.setText(tr("请查看服务器配置并确认服务器可用，如确定没有问题请点击“重试”按钮重试！"));
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.addButton(tr("重试"), QMessageBox::AcceptRole);
+        msgBox.addButton(tr("取消"), QMessageBox::RejectRole);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::AcceptRole)
+        {
+            getServerProcImage();
+        }
+        else if (ret == QMessageBox::RejectRole)
+        {
+            
+        }
+    }
 }
 
 
 void mainWindow::upLoadError(QNetworkReply::NetworkError code)
 {
-    qDebug() << code;
+    QMessageBox::StandardButton result = QMessageBox::critical(this, "连接服务器失败", "请查看服务器配置并确认服务器可用，进入手动标注流程！");
 }
 
+// 批量
 void mainWindow::uploadProcess(qint64 bytesReceived, qint64 bytesTotal)
 {
     qDebug() << bytesReceived << bytesTotal;
@@ -285,13 +375,13 @@ void mainWindow::openServerCfgDialog() {
     //子窗口向主窗口传字符串
     connect(srvrDialog, SIGNAL(sendUpdatedCfg(QString)), this, SLOT(recvUpdatedCfg(QString)));
     
-    emit sendCfg(QString::fromStdString(serverPath));
+    emit sendCfg(serverPath);
 
     srvrDialog->show();
 }
 
 void mainWindow::recvUpdatedCfg(QString updatedCfg) {
-    serverPath = updatedCfg.toLocal8Bit().constData();
+    serverPath = updatedCfg;
     saveUsrCfg();
 }
 
@@ -310,7 +400,7 @@ void mainWindow::loadUsrCfg() {
         inputFile.close(); // 关闭文件  
         pmHelper = { atoi(lines[0].c_str()), atoi(lines[1].c_str()), lines[2], lines[3],
             lines[4], lines[5], lines[6] };
-        serverPath = lines[7];
+        serverPath = QString::fromStdString(lines[7]);
     }
     else {
         pmHelper = { 1, 1, "./", "input","mask","save", "png"};
@@ -326,7 +416,7 @@ void mainWindow::saveUsrCfg() {
     outfile << pmHelper.mask_dir << endl;
     outfile << pmHelper.output_dir << endl;
     outfile << pmHelper.img_format << endl;
-    outfile << serverPath << endl;
+    outfile << serverPath.toLocal8Bit().constData() << endl;
     outfile.flush();
     outfile.close();
 

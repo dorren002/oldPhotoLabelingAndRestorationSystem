@@ -11,3 +11,7 @@ void ImageView::wheelEvent(QWheelEvent* event)
     double ratio = (double)wheelValue / (double)1200 + 1;
     scale(ratio, ratio);
 }
+
+void ImageView::setScaleRatio(double ratio) {
+    scale(ratio, ratio);
+}

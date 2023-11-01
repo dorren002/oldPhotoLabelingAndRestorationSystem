@@ -10,6 +10,9 @@ using namespace std;
 class maskUpdater
 {
 public:
+	bool detectionFlag;
+	bool restoreFlag;
+
 	maskUpdater();
 	maskUpdater(string fname);
 
@@ -18,13 +21,17 @@ public:
 
 	Mat& getImage();
 	Mat& getMask();
+	Mat& getRestoredImage();
+	void getMaskedImage(Mat* dst);
 
-	bool saveMask(string root, string imgFormat);
 	bool resetMask();
-	void updateDetectedMask(Mat* mask);
+	bool saveMask(string root, string imgFormat);
 	void updateMask(int x, int y, bool isAdd); // 0 - cancel / 1 - add
 	
 	bool updateSrcImg(string fname);
+	
+	void updateDetectedMask(Mat* mask);
+	void updateRestoredImg(Mat* restoredImg);
 
 	void updateRGBth(double value);
 	void updateHSVth(double value);
@@ -38,25 +45,28 @@ public:
 
 	double getRGBth();
 	double getHSVth();
-	
+	double getRatio(int viewSize);
+
 	bool empty();
 private:
 	double th_rgb;
 	double th_hsv;
 
 	int maskFlag; //    0/1代表被掩模部分,仅在显示时参考该值
-	
+	bool rgbMode; // 0-hsv  1-rgb
+
 	int cachedStep;
 	int maxCacheStep;
 	deque<Mat>* historyList;
-	
-	bool rgbMode; // 0-hsv  1-rgb
+
 	Mat rgbImg;
 	Mat hsvImg;
+	Mat resImg;
+
 	Mat rgbMask;
 	Mat hsvMask;
-
 	Mat curMask;
+
 	Mat detectedMask;
 
 	int imgWidth = -1;

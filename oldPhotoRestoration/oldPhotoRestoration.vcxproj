@@ -102,7 +102,6 @@
     <QtUic Include="boxSlider.ui" />
     <QtUic Include="mainWindow.ui" />
     <QtMoc Include="mainWindow.h" />
-    <ClCompile Include="ImageItem.cpp" />
     <ClCompile Include="ImageScene.cpp" />
     <ClCompile Include="ImageView.cpp" />
     <ClCompile Include="maskUpdater.cpp" />
@@ -117,7 +116,6 @@
     <QtMoc Include="serverConfigDialog.h" />
     <QtMoc Include="userConfigDialog.h" />
     <QtMoc Include="boxSlider.h" />
-    <ClInclude Include="ImageItem.h" />
     <ClInclude Include="ImageScene.h" />
     <ClInclude Include="ImageView.h" />
     <ClInclude Include="maskUpdater.h" />

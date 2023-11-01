@@ -35,6 +35,9 @@ bool maskUpdater::updateSrcImg(string fname) {
 
     cvtColor(newImg, rgbImg, COLOR_BGR2RGB);
     cvtColor(newImg, hsvImg, COLOR_BGR2HSV);
+
+    detectionFlag = false;
+    restoreFlag = false;
     
     return VOS_OK;
 }
@@ -42,12 +45,19 @@ bool maskUpdater::updateSrcImg(string fname) {
 void maskUpdater::updateDetectedMask(Mat* mask) {
     if (mask) {
         mask->copyTo(detectedMask);
+        detectionFlag = true;
         resetMask();
     }
     else {
-        detectedMask = NULL;
+        detectedMask = false;
     }
-    
+}
+
+void maskUpdater::updateRestoredImg(Mat* restoredImg) {
+    if (restoredImg) {
+        restoreFlag = true;
+        restoredImg->copyTo(resImg);
+    }
 }
 
 void maskUpdater::updateMask(int x, int y, bool isAdd) {
@@ -175,6 +185,12 @@ void maskUpdater::maskDilate() {
     Mat element = Mat::ones(5, 5, CV_8UC1);
 
     dilate(cur, curMask, element);
+    if (rgbMode) {
+        curMask.copyTo(rgbMask);
+    }
+    else {
+        curMask.copyTo(hsvMask);
+    }
 }
 
 void maskUpdater::maskErode() {
@@ -183,6 +199,12 @@ void maskUpdater::maskErode() {
     Mat element = Mat::ones(5, 5, CV_8UC1);
 
     erode(cur, curMask, element);
+    if (rgbMode) {
+        curMask.copyTo(rgbMask);
+    }
+    else {
+        curMask.copyTo(hsvMask);
+    }
 }
 
 void maskUpdater::hsvThresholdOp(Mat& vChannel, bool isAdd) {
@@ -199,7 +221,7 @@ bool maskUpdater::resetMask() {
         return VOS_FAIL;
     }
 
-    if (detectedMask.empty()) {
+    if (!detectionFlag) {
         rgbMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
         hsvMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
         curMask = Mat::zeros(cv::Size(imgWidth, imgHeight), CV_8UC1);
@@ -255,6 +277,17 @@ Mat& maskUpdater::getMask() {
     return curMask;
 }
 
+Mat& maskUpdater::getRestoredImage() {
+    return resImg;
+}
+
+void maskUpdater::getMaskedImage(Mat* dst) {
+    Mat invertedMask, c3Mask;
+    bitwise_not(curMask, invertedMask);
+    cvtColor(invertedMask, c3Mask, cv::COLOR_GRAY2BGR);
+    cv::bitwise_and(rgbImg, c3Mask, *dst);
+}
+
 double maskUpdater::getRGBth() {
     return th_rgb;
 }
@@ -269,6 +302,16 @@ int maskUpdater::rows() {
 
 int maskUpdater::cols() {
     return imgWidth;
+}
+
+double maskUpdater::getRatio(int viewSize) {
+    int imgSize = MAX(imgWidth, imgHeight);
+    if (imgSize < viewSize) {
+        return 1;
+    }
+    else {
+        return (double) viewSize/imgSize;
+    }
 }
 
 /*

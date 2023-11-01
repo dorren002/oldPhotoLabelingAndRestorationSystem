@@ -5,7 +5,8 @@ class ImageView :
 {
 public:
     ImageView(QWidget *parent = 0);
+    void setScaleRatio(double ratio);
 private:
-    void ImageView::wheelEvent(QWheelEvent* event);
+    void wheelEvent(QWheelEvent* event);
 };
 

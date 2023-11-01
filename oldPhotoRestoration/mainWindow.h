@@ -5,7 +5,6 @@
 #include <string>
 #include <QVariant>
 
-#include "ImageItem.h"
 #include "ImageScene.h"
 #include "ImageView.h"
 #include "maskUpdater.h"
@@ -38,22 +37,28 @@ public:
 private:
     Ui::mainWindowClass ui;
     ImageScene* scene;
+    QGraphicsPixmapItem* restoredImageItem;
     maskUpdater* muHelper;
-    UserCfg pmHelper;
 
-    string runPath;
-    string serverPath;
+    UserCfg pmHelper;
+    QString serverPath;
 
     QNetworkAccessManager* networkManager;
     QNetworkReply* reply;
 
+    int viewSize;
+    int serverRequestMode;
+
     void image2Mat(QImage& qImage, cv::Mat* mat);
     void mat2QImage(cv::Mat& mat, QImage* qImage);
     void updateMaskItem();
-    bool openImageFile(std::string fname);
     void mousePressEvent(QMouseEvent* event);
     void initSliderValue();
     void setRGBSliderMaxVal(double val);
+
+    bool openImageFile(std::string fname);
+    void showRestoredImage();
+    void compareRestoredImage();
 
     void actionFileClicked();
     void openUsrCfgDialog();
@@ -62,14 +67,15 @@ private:
     void loadUsrCfg();
     void saveUsrCfg();
 
-    void getServerProcImage(bool mode);
+    void getServerProcImage();
     QByteArray cvMatToByteArray(const cv::Mat& image);
 
 private slots:
     void recvUpdatedCfg(QVariant updatedCfg);
     void recvUpdatedCfg(QString updatedCfg);
 
-    void slot_requestFinished();
+    void slot_detectionRequestFinished();
+    void slot_restoreRequestFinished();
     void upLoadError(QNetworkReply::NetworkError code);
     void uploadProcess(qint64 bytesReceived, qint64 bytesTotal);
 };
