@@ -173,11 +173,6 @@ void mainWindow::compareRestoredImage() {
 bool mainWindow::openImageFile(string fname)
 {
     if (muHelper->updateSrcImg(fname)) {
-        QImage qim("F:/Live/test.jpg");
-        Mat mat;
-        image2Mat(qim, &mat);
-        cv::imshow("test", mat);
-        cv::waitKey(0);
         return VOS_OK;
     }
     else {
