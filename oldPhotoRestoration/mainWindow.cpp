@@ -248,7 +248,7 @@ void mainWindow::actionFileClicked()
     网络相关
 */
 void mainWindow::getServerProcImage() {
-    setCursor(QCursor(Qt::WaitCursor));
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QUrl url;
     QByteArray imageData;
     if (serverRequestMode==1) {
@@ -260,6 +260,7 @@ void mainWindow::getServerProcImage() {
     }
     else {
         if (!ui.useServerCheckBox->isChecked()) {
+            QApplication::restoreOverrideCursor();
             QMessageBox::StandardButton result = QMessageBox::information(this, "提示", "请勾选使用远端检测模型并确认服务器地址及端口后使用。");
             muHelper->resetMask();
             updateMaskItem();
@@ -310,10 +311,10 @@ void mainWindow::slot_detectionRequestFinished()
             muHelper->updateDetectedMask(&temp);
             updateMaskItem();
         }
-        setCursor(QCursor(Qt::WaitCursor));
+        QApplication::restoreOverrideCursor();
     }
     else {
-        setCursor(QCursor(Qt::WaitCursor));
+        QApplication::restoreOverrideCursor();
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("连接服务器失败"));
         msgBox.setText(tr("请查看服务器配置并确认服务器可用，点击“重试”按钮重试或点击“取消”进入手动标注流程。"));
@@ -345,10 +346,10 @@ void mainWindow::slot_restoreRequestFinished()
             muHelper->updateRestoredImg("tmp/serverImg.jpg");
             showRestoredImage();
         }
-        setCursor(QCursor(Qt::WaitCursor));
+        QApplication::restoreOverrideCursor();
     }
     else {
-        setCursor(QCursor(Qt::WaitCursor));
+        QApplication::restoreOverrideCursor();
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("连接服务器失败"));
         msgBox.setText(tr("请查看服务器配置并确认服务器可用，如确定没有问题请点击“重试”按钮重试！"));
