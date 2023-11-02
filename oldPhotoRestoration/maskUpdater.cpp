@@ -240,16 +240,29 @@ bool maskUpdater::resetMask() {
     return VOS_OK;
 }
 
-bool maskUpdater::saveMask(string root, string imgFormat) {
+bool maskUpdater::saveMask(string root, string fname, string imgFormat) {
     const char* p = root.c_str();
     if ((_access(p, 0)) != -1) {
-        imwrite(root + "/output." + imgFormat, curMask);
+        imwrite(root + "/" + fname + "." + imgFormat, curMask);
         return VOS_OK;
     }
     else {
         return VOS_FAIL;
     }
     
+}
+
+bool maskUpdater::saveRestoredImage(string root, string fname, string imgFormat) {
+    const char* p = root.c_str();
+    if ((_access(p, 0)) != -1) {
+        Mat bgrImg;
+        cvtColor(resImg, bgrImg, COLOR_RGB2BGR);
+        imwrite(root + "/" + fname + "." + imgFormat, bgrImg);
+        return VOS_OK;
+    }
+    else {
+        return VOS_FAIL;
+    }
 }
 
 void maskUpdater::updateRGBth(double value) {

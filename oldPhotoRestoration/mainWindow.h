@@ -52,6 +52,8 @@ private:
     bool useDetectionModel;
     bool selectionCursor;
 
+    string savefname;
+
     void image2Mat(QImage& qImage, cv::Mat* mat);
     void mat2QImage(cv::Mat& mat, QImage* qImage);
     void updateMaskItem();

@@ -89,11 +89,19 @@ mainWindow::mainWindow(QWidget* parent)
         updateMaskItem();
         });
     connect(ui.btnSaveMask, &QToolButton::clicked, this, [=]() {
-        if (muHelper->saveMask(pmHelper.root_dir + '/' + pmHelper.output_dir, pmHelper.img_format)) {
-            QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "保存成功！");
+        if (muHelper->saveMask(pmHelper.root_dir + '/' + pmHelper.mask_dir, savefname, pmHelper.img_format)) {
+            QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "掩模保存成功！");
         }
         else {
-            QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "请核对工作目录！");
+            QMessageBox::StandardButton result = QMessageBox::critical(this, "保存失败", "请核对工作目录！");
+        }
+        });
+    connect(ui.btnSave, &QToolButton::clicked, this, [=]() {
+        if (muHelper->saveRestoredImage(pmHelper.root_dir + '/' + pmHelper.output_dir, savefname, pmHelper.img_format)) {
+            QMessageBox::StandardButton result = QMessageBox::information(this, "成功", "图片保存成功！");
+        }
+        else {
+            QMessageBox::StandardButton result = QMessageBox::critical(this, "保存失败", "请核对工作目录！");
         }
         });
     connect(ui.btnDetect, &QToolButton::clicked, this, [=]() {
@@ -235,6 +243,12 @@ void mainWindow::actionFileClicked()
     {
         scene->backgroundImgPath = filename;
         string fname = filename.toLocal8Bit().constData();
+        for (int i = fname.size() - 5; i >= 0; i--) {
+            if (fname.at(i) == '/') {
+                savefname = fname.substr(i+1, fname.size()-i-5);
+                break;
+            }
+        }
         if (openImageFile(fname)) {
             serverRequestMode = 0;
             ui.labelingGraphicView->setScaleRatio(muHelper->getRatio(viewSize));

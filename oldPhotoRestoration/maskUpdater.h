@@ -25,7 +25,8 @@ public:
 	void getMaskedImage(Mat* dst);
 
 	bool resetMask();
-	bool saveMask(string root, string imgFormat);
+	bool saveMask(string root, string fname, string imgFormat);
+	bool saveRestoredImage(string root, string fname, string imgFormat);
 	void updateMask(int x, int y, bool isAdd); // 0 - cancel / 1 - add
 	
 	bool updateSrcImg(string fname);
