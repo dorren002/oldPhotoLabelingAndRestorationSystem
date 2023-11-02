@@ -39,6 +39,12 @@ mainWindow::mainWindow(QWidget* parent)
     ui.btnUndo->setIcon(QIcon(":/mainWindow/image/undo.png"));
     ui.btnRedo->setIcon(QIcon(":/mainWindow/image/redo.png"));
     ui.btnReset->setIcon(QIcon(":/mainWindow/image/reset.png"));
+    ui.btnSetRGBth->setIcon(QIcon(":/mainWindow/image/ok.png"));
+    ui.btnCancelRGBth->setIcon(QIcon(":/mainWindow/image/cancel.png"));
+    ui.btnResetRGBth->setIcon(QIcon(":/mainWindow/image/reset_val.png"));
+    ui.btnSetHSVth->setIcon(QIcon(":/mainWindow/image/ok.png"));
+    ui.btnCancelHSVth->setIcon(QIcon(":/mainWindow/image/cancel.png"));
+    ui.btnResetHSVth->setIcon(QIcon(":/mainWindow/image/reset_val.png"));
     ui.btnHide->setIcon(QIcon(":/mainWindow/image/hide.png"));
     
     // 事件绑定
@@ -68,17 +74,25 @@ mainWindow::mainWindow(QWidget* parent)
         muHelper->resetMask();
         updateMaskItem();
         });
-    connect(ui.btnSelectRGB, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnSetRGBth, &QToolButton::clicked, this, [=]() {
         muHelper->updateRGBth(ui.rgbSlider->getValue());
         });
-    connect(ui.btnCancelRGB, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnCancelRGBth, &QToolButton::clicked, this, [=]() {
         ui.rgbSlider->setValue(muHelper->getRGBth());
         });
-    connect(ui.btnSelectHSV, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnResetRGBth, &QToolButton::clicked, this, [=]() {
+        ui.rgbSlider->setValue(400);
+        muHelper->updateRGBth(400);
+        });
+    connect(ui.btnSetHSVth, &QToolButton::clicked, this, [=]() {
         muHelper->updateHSVth(ui.hsvSlider->getValue());
         });
-    connect(ui.btnCancelHSV, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnCancelHSVth, &QToolButton::clicked, this, [=]() {
         ui.hsvSlider->setValue(muHelper->getHSVth()); 
+        });
+    connect(ui.btnResetHSVth, &QToolButton::clicked, this, [=]() {
+        ui.hsvSlider->setValue(0.8);
+        muHelper->updateHSVth(0.8);
         });
     connect(ui.btnErode, &QToolButton::clicked, this, [=]() {
         muHelper->maskErode();

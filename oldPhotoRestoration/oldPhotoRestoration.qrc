@@ -9,5 +9,8 @@
         <file>image/upload.png</file>
         <file>image/hide.png</file>
         <file>image/show.png</file>
+        <file>image/cancel.png</file>
+        <file>image/ok.png</file>
+        <file>image/reset_val.png</file>
     </qresource>
 </RCC>
