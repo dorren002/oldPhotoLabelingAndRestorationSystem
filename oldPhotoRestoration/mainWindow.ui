@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>900</width>
-    <height>527</height>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
          <x>540</x>
          <y>10</y>
          <width>291</width>
-         <height>441</height>
+         <height>471</height>
         </rect>
        </property>
        <widget class="QWidget" name="widget_3" native="true">
@@ -47,10 +47,10 @@
           <height>31</height>
          </rect>
         </property>
-        <widget class="QToolButton" name="btnBack">
+        <widget class="QToolButton" name="btnUndo">
          <property name="geometry">
           <rect>
-           <x>9</x>
+           <x>140</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -63,7 +63,7 @@
         <widget class="QToolButton" name="btnRedo">
          <property name="geometry">
           <rect>
-           <x>52</x>
+           <x>180</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -76,7 +76,7 @@
         <widget class="QToolButton" name="btnCompare">
          <property name="geometry">
           <rect>
-           <x>95</x>
+           <x>220</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -86,10 +86,10 @@
           <string>...</string>
          </property>
         </widget>
-        <widget class="QToolButton" name="btnDelSelection">
+        <widget class="QToolButton" name="btnReset">
          <property name="geometry">
           <rect>
-           <x>224</x>
+           <x>80</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -99,10 +99,10 @@
           <string>...</string>
          </property>
         </widget>
-        <widget class="QToolButton" name="btnNewSelection">
+        <widget class="QToolButton" name="btnDrag">
          <property name="geometry">
           <rect>
-           <x>138</x>
+           <x>40</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -112,10 +112,10 @@
           <string>...</string>
          </property>
         </widget>
-        <widget class="QToolButton" name="btnAddSelection">
+        <widget class="QToolButton" name="btnSelection">
          <property name="geometry">
           <rect>
-           <x>180</x>
+           <x>0</x>
            <y>0</y>
            <width>37</width>
            <height>31</height>
@@ -236,20 +236,20 @@
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>360</y>
+          <y>390</y>
           <width>54</width>
           <height>16</height>
          </rect>
         </property>
         <property name="text">
-         <string>修复后</string>
+         <string>修复区</string>
         </property>
        </widget>
        <widget class="QWidget" name="widget_4" native="true">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>240</y>
+          <y>210</y>
           <width>261</width>
           <height>60</height>
          </rect>
@@ -287,27 +287,27 @@
           <x>20</x>
           <y>300</y>
           <width>261</width>
-          <height>51</height>
+          <height>81</height>
          </rect>
         </property>
-        <widget class="QToolButton" name="btnReset">
+        <widget class="QToolButton" name="btnDetect">
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>10</y>
+           <y>40</y>
            <width>71</width>
            <height>31</height>
           </rect>
          </property>
          <property name="text">
-          <string>重置</string>
+          <string>检测</string>
          </property>
         </widget>
         <widget class="QToolButton" name="btnSaveMask">
          <property name="geometry">
           <rect>
            <x>140</x>
-           <y>10</y>
+           <y>40</y>
            <width>71</width>
            <height>31</height>
           </rect>
@@ -316,12 +316,25 @@
           <string>保存</string>
          </property>
         </widget>
+        <widget class="QCheckBox" name="useServerCheckBox">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>10</y>
+           <width>161</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>使用远端检测模型</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QToolButton" name="btnRestore">
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>390</y>
+          <y>420</y>
           <width>71</width>
           <height>31</height>
          </rect>
@@ -334,13 +347,26 @@
         <property name="geometry">
          <rect>
           <x>160</x>
-          <y>390</y>
+          <y>420</y>
           <width>71</width>
           <height>31</height>
          </rect>
         </property>
         <property name="text">
          <string>保存</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>280</y>
+          <width>54</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>检测区</string>
         </property>
        </widget>
       </widget>
@@ -352,6 +378,40 @@
          <width>491</width>
          <height>441</height>
         </rect>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+       </property>
+       <property name="dragMode">
+        <enum>QGraphicsView::NoDrag</enum>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="btnHide">
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>417</y>
+         <width>37</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>...</string>
        </property>
       </widget>
      </widget>

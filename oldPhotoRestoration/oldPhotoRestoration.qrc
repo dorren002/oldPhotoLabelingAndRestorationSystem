@@ -1,10 +1,13 @@
 <RCC>
     <qresource prefix="/mainWindow">
-        <file>image/default.jpg</file>
-        <file>image/add.png</file>
-        <file>image/back.png</file>
         <file>image/compare.png</file>
         <file>image/redo.png</file>
-        <file>image/del.png</file>
+        <file>image/cursor.png</file>
+        <file>image/drag.png</file>
+        <file>image/reset.png</file>
+        <file>image/undo.png</file>
+        <file>image/upload.png</file>
+        <file>image/hide.png</file>
+        <file>image/show.png</file>
     </qresource>
 </RCC>
