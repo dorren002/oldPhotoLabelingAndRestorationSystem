@@ -15,6 +15,8 @@ mainWindow::mainWindow(QWidget* parent)
 {
     ui.setupUi(this);
 
+    selectionCursor = true;
+    useDetectionModel = false;
     viewSize = ui.labelingGraphicView->height();
 
     // TODO：窗口自适应
@@ -31,11 +33,13 @@ mainWindow::mainWindow(QWidget* parent)
     initSliderValue();
 
     // ui美化
-    ui.btnBack->setIcon(QIcon(":/mainWindow/image/back.png"));
-    ui.btnRedo->setIcon(QIcon(":/mainWindow/image/redo.png"));
+    ui.btnSelection->setIcon(QIcon(":/mainWindow/image/cursor.png"));
+    ui.btnDrag->setIcon(QIcon(":/mainWindow/image/drag.png"));
     ui.btnCompare->setIcon(QIcon(":/mainWindow/image/compare.png"));
-    ui.btnAddSelection->setIcon(QIcon(":/mainWindow/image/add.png"));
-    ui.btnDelSelection->setIcon(QIcon(":/mainWindow/image/del.png"));
+    ui.btnUndo->setIcon(QIcon(":/mainWindow/image/undo.png"));
+    ui.btnRedo->setIcon(QIcon(":/mainWindow/image/redo.png"));
+    ui.btnReset->setIcon(QIcon(":/mainWindow/image/reset.png"));
+    ui.btnHide->setIcon(QIcon(":/mainWindow/image/hide.png"));
     
     // 事件绑定
     connect(ui.actionSelectRootPath, &QAction::triggered, this, &mainWindow::actionFileClicked);
@@ -43,7 +47,15 @@ mainWindow::mainWindow(QWidget* parent)
     connect(ui.actionSelectServer, &QAction::triggered, this, &mainWindow::openServerCfgDialog);
 
     // 按钮事件
-    connect(ui.btnBack, &QToolButton::clicked, this, [=]() {
+    connect(ui.btnSelection, &QToolButton::clicked, this, [=]() {
+        selectionCursor = true;
+        ui.labelingGraphicView->setCursorType(Qt::ArrowCursor);
+        });
+    connect(ui.btnDrag, &QToolButton::clicked, this, [=]() {
+        selectionCursor = false;
+        ui.labelingGraphicView->setCursorType(Qt::OpenHandCursor);
+        });
+    connect(ui.btnUndo, &QToolButton::clicked, this, [=]() {
         if (muHelper->undo()) {
             updateMaskItem();
         }
@@ -84,11 +96,26 @@ mainWindow::mainWindow(QWidget* parent)
             QMessageBox::StandardButton result = QMessageBox::critical(this, "失败", "请核对工作目录！");
         }
         });
+    connect(ui.btnDetect, &QToolButton::clicked, this, [=]() {
+        serverRequestMode = 0;
+        getServerProcImage();
+        });
     connect(ui.btnRestore, &QToolButton::clicked, this, [=]() {
         serverRequestMode = 1;
         getServerProcImage();
         });
-    
+    connect(ui.btnHide, &QToolButton::clicked, this, [=]() {
+        if (scene->isForegroundHidden()) {
+            scene->showForeground();
+            ui.btnHide->setIcon(QIcon(":/mainWindow/image/hide.png"));
+        }
+        else {
+            scene->hideForeground();
+            ui.btnHide->setIcon(QIcon(":/mainWindow/image/show.png"));
+        }
+        
+        });
+
     // 图像显示
     scene = new ImageScene();
     ui.labelingGraphicView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -105,7 +132,7 @@ void mainWindow::mousePressEvent(QMouseEvent* event)
 {
     int globalX = event->x();
     int globalY = event->y();
-    if (!muHelper->empty() && ui.labelingGraphicView->geometry().contains(QPoint(globalX, globalY))) {
+    if (selectionCursor && !muHelper->empty() && ui.labelingGraphicView->geometry().contains(QPoint(globalX, globalY))) {
         if (event->button() & Qt::LeftButton)
         {
             // 左键选择
@@ -121,7 +148,6 @@ void mainWindow::mousePressEvent(QMouseEvent* event)
     }
 }
 
-
 /*
     修复图像的显示和比较等
 */
@@ -130,7 +156,10 @@ void mainWindow::showRestoredImage() {
         QImage qimage;
         mat2QImage(muHelper->getRestoredImage(), &qimage);
         restoredImageItem = new QGraphicsPixmapItem(QPixmap::fromImage(qimage));
+        scene->hideForeground();
         scene->addItem(restoredImageItem);
+
+        ui.btnHide->setIcon(QIcon(":/mainWindow/image/show.png"));
     }
 }
 
@@ -144,6 +173,11 @@ void mainWindow::compareRestoredImage() {
 bool mainWindow::openImageFile(string fname)
 {
     if (muHelper->updateSrcImg(fname)) {
+        QImage qim("F:/Live/test.jpg");
+        Mat mat;
+        image2Mat(qim, &mat);
+        cv::imshow("test", mat);
+        cv::waitKey(0);
         return VOS_OK;
     }
     else {
@@ -157,7 +191,8 @@ void mainWindow::image2Mat(QImage& qImage, Mat* mat) {
         *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC1, (void*)qImage.bits(), qImage.bytesPerLine());
     }
     else {
-        *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC3, (void*)qImage.bits(), qImage.bytesPerLine());
+        qDebug() << qImage.format();
+        *mat = cv::Mat(qImage.height(), qImage.width(), CV_8UC4, (void*)qImage.bits(), qImage.bytesPerLine());
     }
 }
 
@@ -177,9 +212,8 @@ void mainWindow::updateMaskItem()
     Mat mask = muHelper->getMask();
     mask *= 255;
     mat2QImage(mask, &qimage);
-    scene->updateForeImg(qimage);
+    scene->updateForeground(qimage);
 }
-
 
 void mainWindow::setRGBSliderMaxVal(double val) {
     ui.rgbSlider->setMaxVal(val);
@@ -219,6 +253,7 @@ void mainWindow::actionFileClicked()
     网络相关
 */
 void mainWindow::getServerProcImage() {
+    setCursor(QCursor(Qt::WaitCursor));
     QUrl url;
     QByteArray imageData;
     if (serverRequestMode==1) {
@@ -229,6 +264,12 @@ void mainWindow::getServerProcImage() {
         imageData = cvMatToByteArray(postImage);
     }
     else {
+        if (!ui.useServerCheckBox->isChecked()) {
+            QMessageBox::StandardButton result = QMessageBox::information(this, "提示", "请勾选使用远端检测模型并确认服务器地址及端口后使用。");
+            muHelper->resetMask();
+            updateMaskItem();
+            return;
+        }
        // detect
         url = "http://" + serverPath + "/detect";
         imageData = cvMatToByteArray(muHelper->getImage());
@@ -237,7 +278,7 @@ void mainWindow::getServerProcImage() {
     request.setHeader(QNetworkRequest::ContentTypeHeader, "image/jpg"); 
     reply = networkManager->post(request, imageData);
 
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(upLoadError(QNetworkReply::NetworkError)));
+    //connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(upLoadError(QNetworkReply::NetworkError)));
 
     if (serverRequestMode == 1) {
         connect(reply, SIGNAL(finished()), this, SLOT(slot_restoreRequestFinished()));
@@ -269,16 +310,18 @@ void mainWindow::slot_detectionRequestFinished()
         QByteArray resultContent = reply->readAll();
         QImage image;
         if (image.loadFromData(resultContent)) {
-            cv::Mat temp;
+            Mat temp;
             image2Mat(image, &temp);
             muHelper->updateDetectedMask(&temp);
             updateMaskItem();
         }
+        setCursor(QCursor(Qt::WaitCursor));
     }
     else {
+        setCursor(QCursor(Qt::WaitCursor));
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("连接服务器失败"));
-        msgBox.setText(tr("请查看服务器配置并确认服务器可用，点击“重试”按钮重试或点击“取消”进入手动标注流程！"));
+        msgBox.setText(tr("请查看服务器配置并确认服务器可用，点击“重试”按钮重试或点击“取消”进入手动标注流程。"));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.addButton(tr("重试"), QMessageBox::AcceptRole);
         msgBox.addButton(tr("取消"), QMessageBox::RejectRole);
@@ -290,6 +333,7 @@ void mainWindow::slot_detectionRequestFinished()
         }
         else if (ret == QMessageBox::RejectRole)
         {
+            muHelper->resetMask();
             updateMaskItem();
         }
     }
@@ -301,16 +345,15 @@ void mainWindow::slot_restoreRequestFinished()
     if (nHttpCode == 200) {
         QByteArray resultContent = reply->readAll();
         QImage image;
-        if (image.loadFromData(resultContent)) {
-            image.save("tmp/newnewnew.jpg");
-            cv::Mat temp;
-            image2Mat(image, &temp);
-            cv::imwrite("tmp/test.jpg", temp);
-            muHelper->updateRestoredImg(&temp);
+        if (image.loadFromData(resultContent, 0)) {
+            image.save("tmp/serverImg.jpg");
+            muHelper->updateRestoredImg("tmp/serverImg.jpg");
             showRestoredImage();
         }
+        setCursor(QCursor(Qt::WaitCursor));
     }
     else {
+        setCursor(QCursor(Qt::WaitCursor));
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("连接服务器失败"));
         msgBox.setText(tr("请查看服务器配置并确认服务器可用，如确定没有问题请点击“重试”按钮重试！"));
@@ -333,7 +376,7 @@ void mainWindow::slot_restoreRequestFinished()
 
 void mainWindow::upLoadError(QNetworkReply::NetworkError code)
 {
-    QMessageBox::StandardButton result = QMessageBox::critical(this, "连接服务器失败", "请查看服务器配置并确认服务器可用，进入手动标注流程！");
+    QMessageBox::StandardButton result = QMessageBox::critical(this, "连接服务器失败", "请查看服务器配置并确认服务器可用，进入手动标注流程。");
 }
 
 // 批量

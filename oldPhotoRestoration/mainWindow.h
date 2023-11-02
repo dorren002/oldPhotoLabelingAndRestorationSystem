@@ -49,6 +49,9 @@ private:
     int viewSize;
     int serverRequestMode;
 
+    bool useDetectionModel;
+    bool selectionCursor;
+
     void image2Mat(QImage& qImage, cv::Mat* mat);
     void mat2QImage(cv::Mat& mat, QImage* qImage);
     void updateMaskItem();

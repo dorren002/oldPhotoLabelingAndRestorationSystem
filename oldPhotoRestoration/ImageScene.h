@@ -6,14 +6,20 @@ class ImageScene :
 public:
     int cursorX;
     int cursorY;
-    QPixmap maskPixmap;
-    QString backgroundImgPath = "./image/default.jpg";
-    QString foregroundImgPath = ""; // 非加载本地图像情况需要置为空
 
-    void mousePressEvent(QGraphicsSceneMouseEvent* event);
-    void updateForeImg(QImage pixmap);
+    QString backgroundImgPath = "./image/upload.jpg";
+
+    bool isForegroundHidden();
+    
+    void hideForeground();
+    void showForeground();
+    void updateForeground(QImage pixmap);
     void drawForeground(QPainter* painter, const QRectF& rect);
     void drawBackground(QPainter* painter, const QRectF& rect);
+
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
 private:
-    void setForePathEmpty();
+    float opacity = 0.4;
+
+    QPixmap maskPixmap;
 };

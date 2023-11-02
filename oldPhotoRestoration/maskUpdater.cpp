@@ -53,11 +53,10 @@ void maskUpdater::updateDetectedMask(Mat* mask) {
     }
 }
 
-void maskUpdater::updateRestoredImg(Mat* restoredImg) {
-    if (restoredImg) {
-        restoreFlag = true;
-        restoredImg->copyTo(resImg);
-    }
+void maskUpdater::updateRestoredImg(string fname) {
+    restoreFlag = true;
+    Mat tmp = imread(fname);
+    cvtColor(tmp, resImg, COLOR_BGR2RGB);
 }
 
 void maskUpdater::updateMask(int x, int y, bool isAdd) {

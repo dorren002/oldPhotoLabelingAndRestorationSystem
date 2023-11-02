@@ -24,27 +24,37 @@ void ImageScene::drawBackground(QPainter* painter, const QRectF& rect)
 void ImageScene::drawForeground(QPainter* painter, const QRectF& rect)
 {
 	QPixmap img;
-	if (!foregroundImgPath.isEmpty()) {
-		img.load(foregroundImgPath);
-	}
-	else if(!maskPixmap.isNull()){
+	if (!maskPixmap.isNull()) {
 		img = maskPixmap;
-	}
-	
-	if (!img.isNull())
-	{
-		painter->setOpacity(0.5);//透明度设置
-		painter->drawPixmap(int(sceneRect().left()), int(sceneRect().top()), img);
+
+		if (!img.isNull())
+		{
+			painter->setOpacity(opacity);//透明度设置
+			painter->drawPixmap(int(sceneRect().left()), int(sceneRect().top()), img);
+		}
 	}
 }
 
-void ImageScene::setForePathEmpty() {
-	foregroundImgPath = "";
+void ImageScene::showForeground() {
+	opacity = 0.4;
+	update(0, 0, this->width(), this->height());
 }
 
-void ImageScene::updateForeImg(QImage pixmap) {
-	setForePathEmpty();
+void ImageScene::hideForeground() {
+	opacity = 0;
+	update(0, 0, this->width(), this->height());
+}
+
+void ImageScene::updateForeground(QImage pixmap) {
 	maskPixmap = QPixmap::fromImage(pixmap);
 	update(0, 0, this->width(), this->height());
 }
 
+bool ImageScene::isForegroundHidden() {
+	if (opacity == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}

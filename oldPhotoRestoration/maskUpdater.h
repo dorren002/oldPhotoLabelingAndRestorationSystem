@@ -31,7 +31,7 @@ public:
 	bool updateSrcImg(string fname);
 	
 	void updateDetectedMask(Mat* mask);
-	void updateRestoredImg(Mat* restoredImg);
+	void updateRestoredImg(string fname);
 
 	void updateRGBth(double value);
 	void updateHSVth(double value);
